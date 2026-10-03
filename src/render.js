@@ -16,6 +16,14 @@ const rect = (point, x, y, tint) => L.drawRect(vec(point), L.vec2(x, y), tint);
 const offset = (point, x, y) => add(point, { x, y });
 
 export function fitCamera() {
+  if (document.querySelector('#interface.touch-mirrors:not([hidden])')) {
+    const top = document.querySelector('.lesson-info').getBoundingClientRect().bottom + 12;
+    const bottom = document.querySelector('.bottom-panel').getBoundingClientRect().top - 12;
+    const scale = Math.max(8, Math.min((L.mainCanvasSize.x - 44) / 16.5, (bottom - top) / 8.5));
+    L.setCameraScale(scale);
+    L.setCameraPos(L.vec2(0, ((top + bottom) / 2 - L.mainCanvasSize.y / 2) / scale));
+    return;
+  }
   const short = L.mainCanvasSize.y < 550;
   const padding = short ? 285 : 310;
   L.setCameraScale(Math.max(8, Math.min((L.mainCanvasSize.x - 44) / 16.5, (L.mainCanvasSize.y - padding) / 8.5)));
@@ -45,7 +53,7 @@ function drawTotem(totem, state) {
   }
 }
 
-function drawMirror(mirror, hovered, dragging, time) {
+function drawMirror(mirror, hovered, dragging, time, number) {
   drawMirrorSprite(mirror, time);
   const [a, b] = mirrorEnds(mirror);
   if (mirror.rotatable) line(a, b, .04, color('#68dfff'));
@@ -55,6 +63,7 @@ function drawMirror(mirror, hovered, dragging, time) {
     circle(b, .1, C.gold);
   }
   if (mirror.rotatable) {
+    L.drawText(`M${number}`, vec(offset(mirror, -.8 * MIRROR_SCALE, .9 * MIRROR_SCALE)), .22, color('#68dfff'));
     for (let i = 0; i < 16; i++) {
       const angle = i * Math.PI / 8;
       circle(offset(mirror, Math.cos(angle) * 1.36 * MIRROR_SCALE, Math.sin(angle) * 1.36 * MIRROR_SCALE), .045, hovered || dragging ? C.light : color('#68dfff'));
@@ -192,7 +201,8 @@ export function drawGame(state, aim, hovered, dragging, particles, mode, visual)
   for (const cloud of state.clouds) drawCloud(cloud, state);
   const door = state.door;
   drawDoorSprite(door, state.status === 'won');
-  for (const mirror of state.mirrors) drawMirror(mirror, mirror.id === hovered, mirror.id === dragging, state.time);
+  let mirrorNumber = 0;
+  for (const mirror of state.mirrors) drawMirror(mirror, mirror.id === hovered, mirror.id === dragging, state.time, mirror.rotatable ? ++mirrorNumber : null);
   for (const totem of state.totems) drawTotem(totem, state);
   if (mode === 'playing' && !dragging) {
     const hit = nearestHit(state, state.zeus, aim);

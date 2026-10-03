@@ -16,6 +16,8 @@ The campaign has **25 sequential levels**, entirely in English. Levels 1–16 te
 
 Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate it freely. R/Z restarts the level; Esc pauses. Fixed mirrors are bronze. Mirrors use a compact scale shared by rendering, collision geometry and rotation controls.
 
+On mobile and narrow screens, use the bottom **M1, M2, …** sliders to rotate the matching blue mirrors. Each slider shows its angle and supports half-degree adjustments from 0° to 180°. Tap the board to aim and fire, including directly at a mirror. Sliders remain usable during a lightning shot or cloud charge, and restart restores their initial angles.
+
 Each level provides 3–5 bolts. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt consumes no ammunition and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
 
 The header shows only the current level. After the first victory, **Levels** appears on the title screen: a grid with earned stars, completed levels available to replay, the next unlocked level and locked future levels. **Continue** resumes the first unfinished lesson. **Home** returns to the title during play, pause or defeat. Progress and audio preferences are saved locally.
@@ -57,13 +59,13 @@ Mana Soul GUI frames and buttons are adapted to bronze with CSS filters, parchme
 
 The title uses `src/sprites/transitions/title.png`, with visible loading progress and retry on failure. Starting from level 1 shows `intro.png`: Amalthea introduces the goal of lighting the totems and preparing Zeus for his future. Scenes 1, 2 and 3 follow levels 5, 10 and 15. After level 16, `ready.png` announces the real training before level 17. Image 4 closes level 25 with Zeus facing the Titan.
 
-Narration is defined in `src/cinematics.js`. Amalthea appears on the left. One click reveals the complete text; the next continues. With reduced motion, text is revealed immediately. Scenes freeze gameplay. The ending returns to the title without clearing stars. Continuing an advanced campaign does not replay the introduction.
+Narration is defined in `src/cinematics.js`. Amalthea appears beside a compact subtitle panel with at most two lines. Each fragment disappears after a reading interval and the next appears automatically, preserving the complete narration. Click to reveal the current fragment or advance early; the final action continues into the game. With reduced motion, each fragment is revealed immediately. Scenes freeze gameplay. The ending returns to the title without clearing stars. Continuing an advanced campaign does not replay the introduction.
 
 Original tileset, Zeus, totem, wood, metal, cloud, water and mirror sheets remain intact. Crops and animations are defined in `src/sprites.js`. Order/hit indicators, arrows and timing remain visible. Zeus animations preserve their pivots and pause correctly. Broken blocks use rubble from the tileset.
 
 ## Verification
 
-`npm test` runs **55 tests** for geometry, simulation, cycles and campaign. All 25 solutions are checked at 30, 60 and 120 Hz with sequential shots and real ammunition. Coverage includes timing failures, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
+`npm test` runs **56 tests** for geometry, simulation, cycles, campaign and subtitle pagination. All 25 solutions are checked at 30, 60 and 120 Hz with sequential shots and real ammunition. Coverage includes timing failures, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
 
 Browser checks require an external Playwright installation and Chrome/Edge:
 
@@ -74,9 +76,12 @@ node scripts/ui-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:
 node scripts/progression-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/music-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/sprites-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
+node scripts/mobile-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 ```
 
 Create `artifacts/` before running these checks. The first plays all 25 levels with real controls and verifies progression, stars, pause, order/timing errors, cyclic clouds, mirror chains, rotation during a charge and the ending. The others check loading/retry, scenes, fonts, equal title buttons, narrow/short layouts, sprites, music playback, saved preferences and decoded audio levels. They also work against `npm run preview`. Reference solutions in `scripts/level-solutions.js` are not imported by the shipped game.
+
+The mobile check uses native touch input to drag sliders and solve a mirror level, verifies assignments and restart behavior with multiple mirrors, and checks portrait/landscape layouts plus automatic two-line subtitle transitions.
 
 ## Web and Windows delivery
 

@@ -1,5 +1,6 @@
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
+const { revealStory } = require('./story-helpers.cjs');
 const path = require('node:path');
 let browser;
 (async () => {
@@ -36,9 +37,7 @@ let browser;
   assert.equal(await page.locator('body').getAttribute('data-mode'), 'story');
   assert.equal(await page.locator('#ammo').textContent(), '3');
   assert.equal(await page.locator('#clock').textContent(), '00:00');
-  await page.locator('#story-next').click();
-  await page.waitForFunction(() => !document.querySelector('#story-text').classList.contains('typing'));
-  assert.match(await page.locator('#story-text').textContent(), /light every totem/);
+  assert.match(await revealStory(page), /light every totem/);
   assert.equal(await page.evaluate(() => {
     const box = document.querySelector('#story-scene').getBoundingClientRect();
     return box.top >= 0 && box.bottom <= innerHeight;
@@ -71,8 +70,7 @@ let browser;
   await page.keyboard.press('Space');
   await page.waitForFunction(() => document.body.dataset.mode === 'story');
   await page.setViewportSize({ width: 390, height: 740 });
-  await page.locator('#story-next').click();
-  await page.waitForFunction(() => !document.querySelector('#story-text').classList.contains('typing'));
+  await revealStory(page);
   assert.equal(await page.evaluate(() => {
     const box = document.querySelector('#story-scene').getBoundingClientRect();
     const goat = document.querySelector('.narrator').getBoundingClientRect();

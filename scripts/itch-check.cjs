@@ -13,7 +13,11 @@ let browser;
   await game.locator('#start-button:enabled').waitFor();
   await game.locator('#start-button').click();
   await game.locator('#story-next:enabled').waitFor();
-  await game.locator('#story-next').click();
+  for (let i = 0; i < 100; i++) {
+    if (await game.locator('#cinematics').getAttribute('data-story-complete') === 'true') break;
+    await game.locator('#story-next').click();
+    await page.waitForTimeout(35);
+  }
   await game.locator('#story-next').filter({ hasText: 'Begin the Journey' }).waitFor();
   await game.locator('#story-next').click();
   await game.locator('body[data-mode="playing"]').waitFor();

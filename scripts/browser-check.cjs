@@ -1,7 +1,7 @@
 // Run with a Playwright installation and Chrome/Edge executable as arguments.
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { startGame } = require('./story-helpers.cjs');
+const { startGame, revealStory } = require('./story-helpers.cjs');
 const path = require('node:path');
 
 let browser, page;
@@ -43,9 +43,8 @@ let browser, page;
     await page.waitForTimeout(300);
     const partial = await text('#story-text');
     assert.ok(partial.length > 0 && partial.length < 100, 'The story starts with a typewriter effect');
-    await page.locator('#story-next').click();
-    await page.waitForFunction(() => !document.querySelector('#story-text').classList.contains('typing'));
-    assert.ok((await text('#story-text')).length > partial.length);
+    const narration = await revealStory(page);
+    assert.ok(narration.length > partial.length);
     assert.equal(await text('#clock'), clock, 'Story time must not advance the puzzle');
     await page.screenshot({ path: path.resolve(`artifacts/chapter-${chapter}.png`) });
     await page.locator('#story-next').click();
@@ -196,8 +195,7 @@ let browser, page;
   await page.waitForFunction(() => document.body.dataset.mode === 'story');
   assert.equal(await text('#chapter-label'), 'ADVANCED TRAINING');
   assert.match(await page.locator('#scene-background').getAttribute('src'), /ready.*\.png/);
-  await page.locator('#story-next').click();
-  await page.waitForFunction(() => !document.querySelector('#story-text').classList.contains('typing'));
+  await revealStory(page);
   assert.match(await text('#story-title'), /Real Training/);
   await page.screenshot({ path: path.resolve('artifacts/ready.png') });
   await page.locator('#story-next').click();

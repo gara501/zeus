@@ -154,3 +154,36 @@ kbd { font: 12px var(--pixel); color: #f8ebce; background: #0a19245e; border-col
   .level-card span { font-size: 13px; }
   .controls > div { flex-wrap: wrap; }
 }
+/* Touch rotation levers keep the board clear and use the same M labels as mirrors. */
+#mirror-controls { display: none; gap: 12px; padding: 0 0 8px; overflow-x: auto; pointer-events: auto; }
+.mirror-lever { flex: 1 0 140px; min-width: 0; color: #91e5ff; }
+.mirror-lever > span { display: flex; justify-content: space-between; align-items: center; font: 14px var(--pixel); }
+.mirror-lever b { letter-spacing: .06em; }
+.mirror-lever input { display: block; width: 100%; height: 44px; margin: 0; accent-color: #68dfff; cursor: ew-resize; touch-action: none; }
+@media (max-width: 700px), (pointer: coarse) {
+  #mirror-controls { display: flex; }
+  .touch-mirrors .guidance span { display: none; }
+  .touch-mirrors .guidance p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+}
+/* Narration uses two-line subtitles, with a small portrait and a single action. */
+#story-scene { grid-template-columns: 90px minmax(0, 880px); gap: 16px; padding: 18px 4vw; }
+#story-scene .narrator { width: 90px; margin: 0; align-self: end; }
+#story-scene .story-copy { padding: 12px 18px; border-width: 10px; --frame-edge: 10px; }
+#story-title { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#story-scene .eyebrow { font-size: 11px; margin-bottom: 6px; }
+#story-text { height: 2.9em; min-height: 0; margin: 0 0 8px; font-size: 16px; line-height: 1.45; overflow: hidden; }
+#story-next { min-width: 120px; min-height: 36px; padding: 7px 14px; font-size: 15px; }
+@media (max-width: 700px) {
+  #story-scene { grid-template-columns: 48px minmax(0, 1fr); gap: 8px; padding: 12px 10px; }
+  #story-scene .narrator { width: 48px; }
+  #story-scene .story-copy { padding: 9px 10px; border-width: 7px; --frame-edge: 7px; }
+  #story-scene .eyebrow { font-size: 10px; letter-spacing: .03em; }
+  #chapter-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #story-text { font-size: 14px; }
+  #story-next { min-width: 105px; font-size: 14px; }
+}
+@media (max-height: 550px) {
+  #story-scene { padding-top: 10px; padding-bottom: 10px; grid-template-columns: 55px minmax(0, 880px); gap: 10px; }
+  #story-scene .narrator { width: 55px; }
+  #story-text { font-size: 14px; }
+}

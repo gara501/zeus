@@ -12,6 +12,7 @@ export function createUI(actions, levels) {
     </header>
     <section class="lesson-info"><p id="lesson-label"></p><h2 id="level-name"></h2><div id="objective-status"></div></section>
     <footer class="bottom-panel">
+      <section id="mirror-controls" aria-label="Mirror rotation controls" hidden></section>
       <div class="guidance"><p id="hint"></p><span id="mentor"></span><div id="shot-state"></div></div>
       <div class="controls"><span><kbd>CLICK</kbd> / <kbd>SPACE</kbd> Fire</span><div><button id="home">Home</button><button id="restart">Restart <kbd>R</kbd></button><button id="pause">Pause <kbd>ESC</kbd></button><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button></div></div>
     </footer>
@@ -29,6 +30,12 @@ export function createUI(actions, levels) {
   element('sound').addEventListener('click', actions.sound);
   element('music').addEventListener('click', actions.music);
   element('dialog-button').addEventListener('click', actions.dialog);
+  element('mirror-controls').addEventListener('input', event => {
+    if (event.target.matches('input[data-mirror]')) actions.rotate(event.target.dataset.mirror, Number(event.target.value));
+  });
+  for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
+    root.addEventListener(type, event => event.stopPropagation(), { passive: true });
+  }
   // UI gestures must not also enter the game input stream.
   root.addEventListener('mousedown', event => event.stopPropagation());
   root.addEventListener('click', event => event.target.closest('button')?.blur());
@@ -36,8 +43,27 @@ export function createUI(actions, levels) {
     if (event.code === 'Space' || event.code === 'Enter') event.stopPropagation();
   });
   let lastDialog = '';
+  let mirrorKey = '';
+  const touchLayout = matchMedia('(max-width: 700px), (pointer: coarse)');
   return {
     update({ level, index, state, mode, stars, save, fade, dragging }) {
+      const mirrors = state.mirrors.filter(mirror => mirror.rotatable);
+      const key = `${index}:${mirrors.map(mirror => mirror.id).join(',')}`;
+      if (key !== mirrorKey) {
+        element('mirror-controls').innerHTML = mirrors.map((mirror, number) => `<label class="mirror-lever"><span><b>M${number + 1}</b><output for="mirror-${number}"></output></span><input id="mirror-${number}" data-mirror="${mirror.id}" type="range" min="0" max="180" step="0.5" aria-label="Rotate mirror M${number + 1}" /></label>`).join('');
+        mirrorKey = key;
+      }
+      element('mirror-controls').hidden = mirrors.length === 0;
+      root.classList.toggle('touch-mirrors', touchLayout.matches && mirrors.length > 0);
+      mirrors.forEach((mirror, number) => {
+        const input = element(`mirror-${number}`);
+        let degrees = ((mirror.angle * 180 / Math.PI) % 180 + 180) % 180;
+        if (degrees < .001 && mirror.angle > 0) degrees = 180;
+        input.value = degrees;
+        input.disabled = mode !== 'playing';
+        input.setAttribute('aria-valuetext', `${degrees.toFixed(1)} degrees`);
+        input.previousElementSibling.querySelector('output').textContent = `${degrees.toFixed(1)}°`;
+      });
       element('lesson-label').textContent = level.lesson;
       element('level-name').textContent = level.name;
       element('ammo').textContent = state.remaining;
@@ -49,6 +75,7 @@ export function createUI(actions, levels) {
       element('objectives').textContent = `${state.totems.filter(totem => totem.active).length}/${state.totems.length}`;
       element('clock').textContent = `${String(Math.floor(state.time / 60)).padStart(2, '0')}:${String(Math.floor(state.time % 60)).padStart(2, '0')}`;
       element('hint').textContent = dragging ? 'Rotate freely. Release the mirror when its angle is right.' : level.hint;
+      if (touchLayout.matches && level.id === 'turn') element('hint').textContent = 'Use M1 to angle the blue mirror toward the totem, then tap its center to fire.';
       element('mentor').textContent = level.mentor;
       const busy = hasActiveShot(state);
       element('ammo-pips').classList.toggle('busy', busy && mode === 'playing');

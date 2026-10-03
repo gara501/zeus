@@ -1,4 +1,5 @@
 import { isLevelUnlocked, nextLevelIndex } from './save.js';
+import { dialoguePage } from './dialogue.js';
 export const titleImage = new URL('./sprites/transitions/title.png', import.meta.url).href;
 const goatImage = new URL('./sprites/amaltea.png', import.meta.url).href;
 export const intro = {
@@ -37,7 +38,20 @@ export function createCinematics(actions, levels) {
   document.body.append(root);
   const el = id => root.querySelector(`#${id}`);
   let chapter = null, elapsed = 0, shown = -1, fullyRevealed = false, lastMode = '';
+  let words = [], start = 0, page = { text: '', end: 0 }, pageWidth = -1, readingTime = 0, gap = 0;
+  const measureContext = document.createElement('canvas').getContext('2d');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fitPage() {
+    const text = el('story-text'), style = getComputedStyle(text);
+    measureContext.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    pageWidth = text.clientWidth;
+    page = dialoguePage(words, start, Math.max(1, pageWidth - 12), value => measureContext.measureText(value).width);
+    elapsed = readingTime = 0; shown = -1; fullyRevealed = reduced;
+  }
+  function nextPage() {
+    start = page.end;
+    fitPage();
+  }
   el('start-button').addEventListener('click', actions.start);
   el('title-music').addEventListener('click', actions.music);
   el('levels-button').addEventListener('click', actions.levels);
@@ -46,6 +60,9 @@ export function createCinematics(actions, levels) {
   el('story-next').addEventListener('click', actions.next);
   el('loading-retry').addEventListener('click', actions.retry);
   root.addEventListener('mousedown', event => event.stopPropagation());
+  for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
+    root.addEventListener(type, event => event.stopPropagation(), { passive: true });
+  }
   root.addEventListener('keydown', event => {
     if (['Space', 'Enter'].includes(event.code)) event.stopPropagation();
   });
@@ -57,6 +74,9 @@ export function createCinematics(actions, levels) {
     },
     setChapter(value, ending) {
       chapter = value; elapsed = 0; shown = -1; fullyRevealed = reduced;
+      words = chapter.text.trim().split(/\s+/);
+      start = 0; pageWidth = -1; readingTime = gap = 0;
+      root.dataset.storyComplete = 'false';
       el('scene-background').src = chapter.image;
       el('story-title').textContent = chapter.title;
       el('chapter-label').textContent = chapter.label ?? (ending ? 'FINAL CHAPTER' : `CHAPTER ${chapters.indexOf(chapter) + 1}`);
@@ -64,9 +84,9 @@ export function createCinematics(actions, levels) {
       root.dataset.ending = String(ending);
     },
     reveal() {
-      if (fullyRevealed) return false;
-      fullyRevealed = true;
-      return true;
+      if (!fullyRevealed) { fullyRevealed = true; gap = 0; return true; }
+      if (page.end < words.length) { nextPage(); gap = 0; return true; }
+      return false;
     },
     update(mode, screen, fade, dt, save = { stars: {} }) {
       document.body.dataset.mode = mode;
@@ -101,13 +121,24 @@ export function createCinematics(actions, levels) {
       el('title-music').disabled = mode !== 'title';
       el('story-next').disabled = mode !== 'story';
       if (screen === 'story' && chapter) {
-        if (mode === 'story' && !document.hidden) elapsed += dt;
-        const count = fullyRevealed ? Array.from(chapter.text).length : Math.floor(elapsed * 34);
-        const characters = Array.from(chapter.text);
+        if (pageWidth !== el('story-text').clientWidth) fitPage();
+        const ticking = mode === 'story' && !document.hidden;
+        if (gap > 0) {
+          if (ticking) gap = Math.max(0, gap - dt);
+          if (gap === 0) nextPage();
+        } else if (ticking) elapsed += dt;
+        const characters = Array.from(page.text);
+        const count = fullyRevealed ? characters.length : Math.floor(elapsed * 34);
         if (count >= characters.length) fullyRevealed = true;
-        if (count !== shown) { el('story-text').textContent = characters.slice(0, count).join(''); shown = count; }
-        el('story-text').classList.toggle('typing', !fullyRevealed);
-        el('story-next').textContent = fullyRevealed ? chapter.button ?? (root.dataset.ending === 'true' ? 'Back to Title' : 'Continue') : 'Reveal Text';
+        if (fullyRevealed && ticking && gap === 0) readingTime += dt;
+        if (gap === 0 && fullyRevealed && page.end < words.length && readingTime >= Math.max(2, characters.length / 22)) gap = .2;
+        const visibleCount = gap > 0 ? 0 : count;
+        if (visibleCount !== shown) { el('story-text').textContent = characters.slice(0, visibleCount).join(''); shown = visibleCount; }
+        el('story-text').classList.toggle('typing', !fullyRevealed && gap === 0);
+        el('story-text').setAttribute('aria-live', fullyRevealed && gap === 0 ? 'polite' : 'off');
+        root.dataset.storyComplete = String(fullyRevealed && page.end === words.length);
+        root.dataset.storyFragment = String(start);
+        el('story-next').textContent = !fullyRevealed ? 'Reveal Text' : page.end < words.length ? 'Next' : chapter.button ?? (root.dataset.ending === 'true' ? 'Back to Title' : 'Continue');
       }
       el('cinematic-fade').style.opacity = fade;
       el('cinematic-fade').style.pointerEvents = fade > 0 ? 'auto' : 'none';

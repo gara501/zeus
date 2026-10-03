@@ -26,18 +26,23 @@ let stars = 0;
 let fade = 0;
 let aim = { x: 1, y: 0 };
 let dragging = null;
+const mirrorCommands = new Map();
 let hovered = null;
 let particles = [];
 let visual = { time: 0, shotAt: -Infinity, victoryAt: 0, lostAt: 0 };
 const save = readSave();
 const music = createMusic();
+const touchMirrorControls = matchMedia('(max-width: 700px), (pointer: coarse)');
 function toggleMusic() { save.musicMuted = !save.musicMuted; writeSave(save); }
 let pointerOnCanvas = false;
 let pointerScreen = { x: 0, y: 0 };
 document.addEventListener('mousemove', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 document.addEventListener('mousedown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
+document.addEventListener('pointerdown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
+document.addEventListener('pointermove', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 
 function load(indexToLoad) {
+  mirrorCommands.clear();
   screen = null;
   index = indexToLoad;
   state = createState(levels[index]);
@@ -54,7 +59,7 @@ function restart() {
   load(index);
 }
 function togglePause() {
-  if (mode === 'playing') { mode = 'paused'; dragging = null; }
+  if (mode === 'playing') { mode = 'paused'; dragging = null; mirrorCommands.clear(); }
   else if (mode === 'paused') mode = 'playing';
 }
 function finishFade() {
@@ -106,6 +111,11 @@ const cinematics = createCinematics({
   retry: () => boot(),
 }, levels);
 const ui = createUI({
+  rotate: (id, degrees) => {
+    if (mode === 'playing' && Number.isFinite(degrees) && state.mirrors.some(mirror => mirror.id === id && mirror.rotatable)) {
+      mirrorCommands.set(id, degrees * Math.PI / 180);
+    }
+  },
   music: toggleMusic,
   restart, pause: togglePause, dialog: dialogAction,
   home: () => {
@@ -143,11 +153,12 @@ function gameUpdate() {
   if (L.keyWasPressed('KeyR') || L.keyWasPressed('KeyZ')) restart();
   if (['playing', 'victory', 'fadeOut', 'lost'].includes(mode)) visual.time += dt;
   if (mode === 'playing') {
-    const commands = [];
+    const commands = [...mirrorCommands].map(([id, angle]) => ({ type: 'rotate', id, angle }));
+    mirrorCommands.clear();
     const mouse = { x: L.mousePos.x, y: L.mousePos.y };
     hovered = pointerOnCanvas ? state.mirrors.find(mirror => mirror.rotatable && Math.hypot(mouse.x - mirror.x, mouse.y - mirror.y) < 1.32 * MIRROR_SCALE)?.id ?? null : null;
     const mousePressed = pointerOnCanvas && L.mouseWasPressed(0);
-    if (mousePressed && hovered) dragging = hovered;
+    if (mousePressed && hovered && !touchMirrorControls.matches) dragging = hovered;
     if (dragging && !L.mouseIsDown(0)) dragging = null;
     if (dragging) {
       const mirror = state.mirrors.find(m => m.id === dragging);
@@ -158,7 +169,7 @@ function gameUpdate() {
       if (pointerOnCanvas && Math.hypot(mouse.x - state.zeus.x, mouse.y - state.zeus.y) > .1) {
         aim = normalize({ x: mouse.x - state.zeus.x, y: mouse.y - state.zeus.y });
       }
-      if ((mousePressed && !hovered) || L.keyWasPressed('Space')) commands.push({ type: 'fire', direction: aim });
+      if ((mousePressed && (!hovered || touchMirrorControls.matches)) || L.keyWasPressed('Space')) commands.push({ type: 'fire', direction: aim });
     }
     const result = stepSimulation(state, commands, dt);
     state = result.state;
