@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="light"><stop stop-color="#23424d"/><stop offset=".6" stop-color="#142b36"/><stop offset="1" stop-color="#0c161f"/></radialGradient>
+    <linearGradient id="stone"><stop stop-color="#31414a"/><stop offset=".35" stop-color="#24343d"/><stop offset="1" stop-color="#15232d"/></linearGradient>
+    <linearGradient id="floor" x2="0" y2="1"><stop stop-color="#182933"/><stop offset="1" stop-color="#0b141d"/></linearGradient>
+  </defs>
+  <path fill="url(#light)" d="M0 0h1600v1000H0z"/>
+  <g fill="#14232d" stroke="#243540" stroke-width="2">
+    <path d="m0 0 180 0 63 82-44 90 36 109-99 115 18 197-47 133L0 840z"/>
+    <path d="m0 0 54 196 86 52 38-104L121 35Z"/><path d="m0 261 140-13-37 229L0 520Z"/>
+    <path d="m1600 0-180 0-63 82 44 90-36 109 99 115-18 197 47 133 107 114z"/>
+    <path d="m1600 0-54 196-86 52-38-104 57-109Z"/><path d="m1600 261-140-13 37 229 103 43Z"/>
+    <path d="M150 0h1300l-106 59-212-21-136 59-209-26-130 55-107-45-183 23-143-58Z"/>
+  </g>
+  <g fill="url(#stone)" stroke="#33434a" stroke-width="2" opacity=".72">
+    <path d="M99 218h103v28H99zM109 250h82v447h-82zM94 704h110v25H94zM82 735h134v21H82z"/>
+    <path d="M1398 218h103v28h-103zM1409 250h82v282l-28-23-54 31zM1409 572l35-28 47 30v123h-82zM1394 704h110v25h-110zM1382 735h134v21h-134z"/>
+  </g>
+  <g fill="none" stroke="#638393" stroke-width="2" opacity=".12"><path d="M126 263v420m21-420v420m22-420v420M1427 263v231m21-231v241m22-241v255"/><path d="m112 438 32-16 47 9m-80 138 41 16 38-4"/></g>
+  <path fill="url(#floor)" d="M0 781 269 744h1062l269 37v219H0z"/>
+  <g fill="none" stroke="#344851" opacity=".18"><path d="m0 847 369-38h862l369 38M0 931l282-58h1036l282 58M344 780 250 1000m1006-220 94 220M640 770l-23 230m343-230 23 230"/></g>
+  <g fill="#889b98" opacity=".16"><path d="m58 762 56-37 36 36zM1438 766l48-36 51 44zM203 796l29-26 34 26z"/></g>
+</svg>

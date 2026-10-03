@@ -1,0 +1,53 @@
+const { chromium } = require(process.argv[2] || 'playwright');
+const assert = require('node:assert/strict');
+const { startGame } = require('./story-helpers.cjs');
+let browser;
+(async () => {
+  browser = await chromium.launch({ headless: true, executablePath: process.argv[3] });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto(process.argv[4] || 'http://127.0.0.1:5173/');
+  await page.waitForSelector('#start-button:enabled');
+  assert.equal(await page.locator('#levels-button').isVisible(), false);
+  await startGame(page);
+  await page.waitForFunction(() => document.body.dataset.mode === 'playing');
+  assert.equal(await page.locator('#current-level').textContent(), '01');
+  const point = await page.evaluate(() => {
+    const box = document.querySelector('#game canvas').getBoundingClientRect();
+    const scale = Math.min((box.width - 44) / 16.5, (box.height - 310) / 8.5);
+    return { x: box.x + box.width / 2 + 4 * scale, y: box.y + box.height / 2 - 1.4 * scale };
+  });
+  await page.mouse.move(point.x, point.y);
+  await page.waitForTimeout(100);
+  await page.keyboard.press('Space');
+  await page.waitForFunction(() => document.querySelector('#current-level').textContent === '02' && document.body.dataset.mode === 'playing');
+  await page.locator('#home').click();
+  await page.waitForFunction(() => document.body.dataset.mode === 'title');
+  assert.equal(await page.locator('#start-button').textContent(), 'Continue');
+  await page.locator('#levels-button').click();
+  await page.waitForFunction(() => document.body.dataset.mode === 'levels');
+  assert.equal(await page.locator('.level-card').count(), 25);
+  assert.equal(await page.locator('.level-card:enabled').count(), 2);
+  assert.equal(await page.locator('[data-level="0"]').getAttribute('class'), 'level-card completed');
+  assert.equal(await page.locator('[data-level="2"]').isDisabled(), true);
+  await page.screenshot({ path: 'artifacts/level-matrix.png' });
+  for (const [width, height] of [[390, 740], [844, 500]]) {
+    await page.setViewportSize({ width, height });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll('.level-card')].every(card => card.getBoundingClientRect().right <= innerWidth)), true);
+    await page.locator('[data-level="24"]').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `artifacts/level-matrix-${width}.png` });
+  }
+  await page.locator('[data-level="0"]').click();
+  await page.waitForFunction(() => document.body.dataset.mode === 'playing');
+  assert.equal(await page.locator('#current-level').textContent(), '01');
+  await page.reload();
+  await page.waitForSelector('#start-button:enabled');
+  assert.equal(await page.locator('#levels-button').isVisible(), true);
+  await page.locator('#start-button').click();
+  await page.waitForFunction(() => document.body.dataset.mode === 'playing');
+  assert.equal(await page.locator('#current-level').textContent(), '02');
+  assert.deepEqual(errors, []);
+  console.log('Progression check passed: real victory, unlocks, replay, saved progress, Continue and responsive matrix.');
+  await browser.close();
+})().catch(async error => { console.error(error); await browser?.close(); process.exitCode = 1; });
