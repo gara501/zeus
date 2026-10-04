@@ -22,7 +22,7 @@ let browser;
   await game.locator('#story-next').click();
   await game.locator('body[data-mode="playing"]').waitFor();
   assert.equal(await game.locator('#level-name').textContent(), 'The First Spark');
-  assert.equal(await game.locator('#ammo').textContent(), '3');
+  assert.equal(await game.locator('#ammo').textContent(), '0');
   await game.locator('#pause').click();
   await game.locator('body[data-mode="paused"]').waitFor();
   await game.locator('#dialog-button').click();

@@ -37,7 +37,7 @@ let browser;
   await aim(4, 1.5);
   await screenshot('idle');
   await page.keyboard.press('Space');
-  await page.waitForFunction(() => document.querySelector('#ammo').textContent === '2');
+  await page.waitForFunction(() => document.querySelector('#ammo').textContent === '1');
   await page.waitForTimeout(390);
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => !document.querySelector('#overlay').hidden);
@@ -62,13 +62,14 @@ let browser;
   await screenshot('left');
   for (let shot = 0; shot < 3; shot++) {
     await page.keyboard.press('Space');
-    await page.waitForFunction(remaining => document.querySelector('#ammo').textContent === String(remaining), 2 - shot);
+    await page.waitForFunction(remaining => document.querySelector('#ammo').textContent === String(remaining), shot + 1);
     if (shot < 2) await page.waitForFunction(() => document.querySelector('#shot-state').textContent === 'Ready to fire');
   }
-  await page.waitForFunction(() => document.querySelector('#dialog-title').textContent === 'There Is More to Learn');
+  await page.waitForFunction(() => document.querySelector('#shot-state').textContent === 'Ready to fire');
+  assert.equal(await page.locator('body').getAttribute('data-mode'), 'playing');
   await page.waitForTimeout(250);
   await page.evaluate(() => { document.querySelector('#overlay').style.visibility = 'hidden'; });
-  await screenshot('lost');
+  await screenshot('unlimited-misses');
   await page.evaluate(() => {
     const save = JSON.parse(localStorage.getItem('zeus-progress-v1'));
     save.stars.bronze = 3;
@@ -94,7 +95,7 @@ let browser;
   assert.match(await page.locator('#hint').textContent(), /Rotate freely/);
   await page.mouse.up();
   await screenshot('mirror-size');
-  assert.equal(await page.locator('#ammo').textContent(), '3', 'Dragging the new outer rim must not fire');
+  assert.equal(await page.locator('#ammo').textContent(), '0', 'Dragging the new outer rim must not fire');
   await aim(1, -1.5);
   await page.keyboard.press('Space');
   await page.waitForFunction(() => document.querySelector('#dialog-title').textContent === 'Victory!');

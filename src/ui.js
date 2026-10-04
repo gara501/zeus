@@ -8,7 +8,7 @@ export function createUI(actions, levels) {
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true">ϟ</span><div><h1>ZEUS</h1><p>THE PATH OF THUNDER</p></div></div>
       <div class="current-level" aria-label="Current level"><span>LEVEL</span><strong id="current-level">01</strong></div>
-      <div class="stats"><div class="ammo-stat"><span><i class="stat-icon lightning-icon" aria-hidden="true"></i>BOLTS</span><strong id="ammo" class="sr-only">3</strong><div id="ammo-pips" aria-label="3 bolts remaining"></div></div><div><span><i class="stat-icon totem-icon" aria-hidden="true"></i>TOTEMS</span><strong id="objectives">0/1</strong></div><div><span><i class="stat-icon clock-icon" aria-hidden="true"></i>TIME</span><strong id="clock">00:00</strong></div></div>
+      <div class="stats"><div class="ammo-stat"><span><i class="stat-icon lightning-icon" aria-hidden="true"></i>BOLTS</span><strong id="ammo" class="sr-only">0</strong><div id="ammo-pips" aria-label="Unlimited bolts available"></div></div><div><span><i class="stat-icon totem-icon" aria-hidden="true"></i>TOTEMS</span><strong id="objectives">0/1</strong></div><div><span><i class="stat-icon clock-icon" aria-hidden="true"></i>TIME</span><strong id="clock">00:00</strong></div></div>
       <button id="pause" aria-haspopup="dialog" aria-controls="overlay">Options</button>
     </header>
     <section class="lesson-info"><p id="lesson-label"></p><h2 id="level-name"></h2><div id="objective-status"></div></section>
@@ -75,12 +75,10 @@ export function createUI(actions, levels) {
       });
       element('lesson-label').textContent = level.lesson;
       element('level-name').textContent = level.name;
-      element('ammo').textContent = state.remaining;
-      if (element('ammo-pips').childElementCount !== level.shots) {
-        element('ammo-pips').innerHTML = Array.from({ length: level.shots }, () => '<span class="ammo-pip" aria-hidden="true">ϟ</span>').join('');
-      }
-      element('ammo-pips').setAttribute('aria-label', `${state.remaining} of ${level.shots} bolts remaining`);
-      [...element('ammo-pips').children].forEach((pip, number) => pip.classList.toggle('spent', number >= state.remaining));
+      element('ammo').textContent = state.shots;
+      element('ammo-pips').textContent = `${state.shots} · ∞`;
+      element('ammo-pips').setAttribute('aria-label', `${state.shots} bolts fired. Unlimited bolts available.`);
+      element('ammo-pips').title = `Unlimited bolts. Aim for ${level.idealShots} to earn two stars; finish within ${level.threeStarTime} seconds for three.`;
       element('objectives').textContent = `${state.totems.filter(totem => totem.active).length}/${state.totems.length}`;
       element('clock').textContent = `${String(Math.floor(state.time / 60)).padStart(2, '0')}:${String(Math.floor(state.time % 60)).padStart(2, '0')}`;
       element('clock').dataset.seconds = state.time.toFixed(4);
@@ -89,7 +87,7 @@ export function createUI(actions, levels) {
       element('mentor').textContent = level.mentor;
       const busy = hasActiveShot(state);
       element('ammo-pips').classList.toggle('busy', busy && mode === 'playing');
-      element('shot-state').textContent = busy ? 'Bolt in flight · wait until it finishes' : state.remaining ? 'Ready to fire' : 'No bolts remaining';
+      element('shot-state').textContent = busy ? 'Bolt in flight · wait until it finishes' : 'Ready to fire';
       element('shot-state').classList.toggle('busy', busy);
       const timed = state.groups.find(group => group.type === 'timed' && group.deadline !== null);
       const ordered = state.groups.find(group => group.type === 'ordered' && !group.completed);
@@ -106,7 +104,6 @@ export function createUI(actions, levels) {
       element('home').disabled = !['playing', 'paused', 'lost'].includes(mode);
       const dialog = {
         paused: ['TAKE A BREATH', 'Options', 'The game is paused while you adjust your options.', 'Continue'],
-        lost: ['TRY AGAIN', 'There Is More to Learn', 'Out of bolts. Try another angle; restarting restores every charge.', 'Retry'],
         victory: ['LESSON COMPLETED', 'Victory!', `${state.shots} ${state.shots === 1 ? 'bolt' : 'bolts'} · ${state.time.toFixed(1)} s`, ''],
       }[mode];
       element('overlay').hidden = !dialog;

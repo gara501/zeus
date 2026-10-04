@@ -35,7 +35,7 @@ let browser;
   await page.keyboard.press('Space');
   await page.keyboard.press('KeyR');
   assert.equal(await page.locator('body').getAttribute('data-mode'), 'story');
-  assert.equal(await page.locator('#ammo').textContent(), '3');
+  assert.equal(await page.locator('#ammo').textContent(), '0');
   assert.equal(await page.locator('#clock').textContent(), '00:00');
   assert.match(await revealStory(page), /light every totem/);
   assert.equal(await page.evaluate(() => {
@@ -45,7 +45,7 @@ let browser;
   await page.screenshot({ path: path.resolve('artifacts/intro-narrow.png') });
   await page.locator('#story-next').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
-  assert.equal(await page.locator('#ammo').textContent(), '3');
+  assert.equal(await page.locator('#ammo').textContent(), '0');
   assert.equal(await page.locator('#cinematics').isVisible(), false);
   const { levels } = await import('../src/levels.js');
   await page.evaluate(ids => localStorage.setItem('zeus-progress-v1', JSON.stringify({ stars: Object.fromEntries(ids.map(id => [id, 3])), muted: true })), levels.map(level => level.id));

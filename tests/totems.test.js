@@ -14,8 +14,11 @@ function shoot(state, target) {
 }
 const hit = (state, index, time) => hitTotem(state, state.totems[index], time, []);
 
-test('all levels allocate three to six shots, reserving six for the final trial', () => {
-  for (const [index, level] of levels.entries()) assert.ok(level.shots >= 3 && level.shots <= (index === 34 ? 6 : 5));
+test('every level has an efficiency target without an ammunition limit', () => {
+  for (const level of levels) {
+    assert.ok(level.idealShots > 0);
+    assert.equal('remaining' in createState(level), false);
+  }
 });
 
 test('a short shot unlocks firing immediately after impact without an extra cooldown', () => {
@@ -26,7 +29,7 @@ test('a short shot unlocks firing immediately after impact without an extra cool
   assert.equal(hasActiveShot(state), false);
   assert.equal(state.time < .18, true);
   const result = stepSimulation(state, [command], 1 / 60);
-  assert.equal(result.state.remaining, 1);
+  assert.equal(result.state.shots, 2);
   assert.equal(result.events.some(event => event.type === 'fire'), true);
 });
 
@@ -39,7 +42,7 @@ test('multi-hit lesson requires three separate arrivals and reset clears partial
     assert.equal(state.totems[0].active, count === 3);
   }
   assert.equal(state.status, 'won');
-  assert.equal(state.remaining, 1);
+  assert.equal(state.shots, 3);
   assert.deepEqual(createState(levels[13]), initial);
 });
 
@@ -114,9 +117,9 @@ test('shooting is locked during conduction and cloud storage', () => {
     state = stepSimulation(state, [{ type: 'fire', direction }], 1 / 60).state;
     state = travel(state, seconds);
     assert.ok(hasActiveShot(state));
-    const remaining = state.remaining;
+    const shots = state.shots;
     const result = stepSimulation(state, [{ type: 'fire', direction }], 1 / 60);
-    assert.equal(result.state.remaining, remaining);
+    assert.equal(result.state.shots, shots);
     assert.equal(result.events.some(event => event.type === 'fire'), false);
   }
 });
@@ -127,8 +130,8 @@ test('last surviving sibling blocks another shot until it disappears', () => {
   state.nextId = 3;
   state = travel(state, .2);
   assert.equal(state.rays.length, 1);
-  assert.equal(stepSimulation(state, [{ type: 'fire', direction: { x: 1, y: 0 } }], 1 / 60).state.remaining, 3);
+  assert.equal(stepSimulation(state, [{ type: 'fire', direction: { x: 1, y: 0 } }], 1 / 60).state.shots, 0);
   state = travel(state, 1);
   assert.equal(hasActiveShot(state), false);
-  assert.equal(stepSimulation(state, [{ type: 'fire', direction: { x: 1, y: 0 } }], 1 / 60).state.remaining, 2);
+  assert.equal(stepSimulation(state, [{ type: 'fire', direction: { x: 1, y: 0 } }], 1 / 60).state.shots, 1);
 });

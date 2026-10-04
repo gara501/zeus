@@ -10,7 +10,7 @@ export const MAX_BRANCHES = 128;
 export const hasActiveShot = state => state.rays.length > 0 || state.pulses.length > 0 || state.delayed.length > 0;
 
 export function createState(level) {
-  return { ...loadLevel(level), time: 0, remaining: level.shots ?? 3, shots: 0,
+  return { ...loadLevel(level), time: 0, shots: 0,
     rays: [], trails: [], pulses: [], delayed: [], branchCounts: {}, nextId: 1, status: 'playing' };
 }
 
@@ -28,7 +28,9 @@ export function stepSimulation(previous, commands, dt) {
       const mirror = state.mirrors.find(m => m.id === command.id && m.rotatable);
       if (mirror && Number.isFinite(command.angle)) mirror.angle = command.angle;
     }
-    if (command.type === 'fire' && state.remaining > 0 && !hasActiveShot(state)) {
+    if (command.type === 'fire' && !hasActiveShot(state)) {
+      // The previous shot has finished; release its per-shot bookkeeping.
+      state.branchCounts = {};
       const ray = { id: state.nextId++, position: { ...state.zeus }, direction: normalize(command.direction),
         speed: RAY_SPEED, age: 0, interactions: 0 };
       ray.shotId = ray.id;
@@ -36,7 +38,6 @@ export function stepSimulation(previous, commands, dt) {
       state.branchCounts[ray.shotId] = 1;
       state.rays.push(ray);
       state.shots++;
-      state.remaining--;
       events.push({ type: 'fire', position: ray.position, time: startTime });
     }
   }
@@ -145,9 +146,6 @@ export function stepSimulation(previous, commands, dt) {
   if (state.totems.every(totem => totem.active)) {
     state.status = 'won';
     events.push({ type: 'victory', position: state.door, time: state.time });
-  } else if (state.remaining === 0 && state.rays.length === 0 && state.pulses.length === 0 && state.delayed.length === 0) {
-    state.status = 'lost';
-    events.push({ type: 'empty', time: state.time });
   }
   return { state, events };
 }

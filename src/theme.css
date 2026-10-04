@@ -34,7 +34,7 @@ button:focus-visible { outline: 2px solid #fff1b0; outline-offset: 3px; }
 .totem-icon { border: 1px solid currentColor; border-bottom-width: 3px; background: linear-gradient(transparent 35%, #efd087 35% 47%, transparent 47%); }
 .clock-icon { border: 1px solid currentColor; border-radius: 50%; position: relative; }
 .clock-icon::before { content: ''; position: absolute; width: 3px; height: 4px; border-left: 1px solid currentColor; border-bottom: 1px solid currentColor; left: 4px; top: 2px; }
-.stats #ammo-pips { display: flex; flex-direction: row; min-width: 0; gap: 1px; height: 28px; align-items: center; }
+.stats #ammo-pips { display: flex; flex-direction: row; min-width: 0; gap: 1px; height: 28px; align-items: center; font: 24px var(--pixel); color: #ffcf68; white-space: nowrap; }
 #ammo-pips .ammo-pip { font: 30px Georgia, serif; line-height: 1; letter-spacing: 0; color: #ffcf68; text-shadow: 0 0 8px #ffa53645; transition: opacity .2s, color .2s; }
 #ammo-pips .spent { color: #56616a; opacity: .45; text-shadow: none; }
 #ammo-pips.busy .ammo-pip:not(.spent) { color: #fff1b5; }

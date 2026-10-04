@@ -22,9 +22,9 @@ Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate i
 
 On mobile and narrow screens, use the bottom **M1, M2, …** sliders to rotate the matching blue mirrors. Each slider shows its angle and supports half-degree adjustments from 0° to 180°. Tap the board to aim and fire, including directly at a mirror. Sliders remain usable during a lightning shot or cloud charge, and restart restores their initial angles.
 
-Levels provide 3–5 bolts, with six reserved for the final trial. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt consumes no ammunition and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
+Every level provides unlimited bolts. The HUD shows bolts fired and ∞. Completion earns one star; using no more than the ideal number of shots earns two, and also finishing within the target time earns three. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt does not increase the shot count and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
 
-The header shows only the current level. After the first victory, **Levels** appears on the title screen: a grid with earned stars, completed levels available to replay, the next unlocked level and locked future levels. **Continue** resumes the first unfinished lesson. **Home** returns to the title during play, pause or defeat. Progress and audio preferences are saved locally.
+The header shows only the current level. After the first victory, **Levels** appears on the title screen: a grid with earned stars, completed levels available to replay, the next unlocked level and locked future levels. **Continue** resumes the first unfinished lesson. **Home** returns to the title during play or pause. Progress and audio preferences are saved locally.
 
 The title buttons share the same dimensions, font and font size.
 
@@ -44,7 +44,7 @@ The title buttons share the same dimensions, font and font size.
 - **Totems:** persistent, multiple-hit, ordered or timed targets. Each actual arrival counts. A wrong-order hit resets its group. The first impact opens a timed window; expiration clears all charge in that group. The exact deadline is valid. Completed groups remain active.
 - **Stone guardians (levels 31–35):** deterministic horizontal patrols between marked endpoints. Front and side impacts consume the bolt without damaging the guardian. A rear impact consumes the bolt and shatters the guardian, permanently clearing its collision; rubble is cosmetic. The gold marker identifies its back. Patrol movement and collisions use the level clock, freeze on pause and reset on restart. Moving collisions are swept through each turn, preventing tunnelling between frames. Walking and destruction use `src/sprites/monster.png`.
 
-Pause freezes clocks, lightning, phases, cycles and timed windows. Restart restores the entire level. Defeat waits for all bolts, conduction and pending charges to finish. A shot has a 128-branch limit, a bolt lifetime limit and an interaction budget.
+Pause freezes clocks, lightning, phases, cycles and timed windows. Restart restores the entire level. Missed shots never trigger defeat; after the current shot finishes, you can try again. A shot has a 128-branch limit, a bolt lifetime limit and an interaction budget.
 
 ## Music
 
@@ -62,7 +62,7 @@ Pause freezes clocks, lightning, phases, cycles and timed windows. Restart resto
 
 ## Presentation and story
 
-Mana Soul GUI frames and buttons are adapted to bronze with CSS filters, parchment panels and a Zeus portrait. Cinzel is used for headings; Pixelify Sans for HUD, buttons and labels. Ammunition is shown as charges that dim when spent. The outer background is a vector cave with columns and soft blue light. Fonts, sheets and licenses are bundled locally.
+Mana Soul GUI frames and buttons are adapted to bronze with CSS filters, parchment panels and a Zeus portrait. Cinzel is used for headings; Pixelify Sans for HUD, buttons and labels. The HUD shows a shot counter and the unlimited-bolts symbol. The outer background is a vector cave with columns and soft blue light. Fonts, sheets and licenses are bundled locally.
 
 The title uses `src/sprites/transitions/title.png`, with visible loading progress and retry on failure. Starting from level 1 shows `intro.png`: Amalthea introduces the goal of lighting the totems and preparing Zeus for his future. Scenes 1, 2 and 3 follow levels 5, 10 and 15. After level 16, `ready.png` announces the real training before level 17. After level 25, `aguila1.png` introduces the eagle and the unity of spirit and lightning; `aguila2.png` follows level 30 and introduces the last five trials and guardians. Image 4 closes level 35 with Zeus facing the Titan. Continue also shows the eagle scene when resuming at the beginning of either new chapter.
 
@@ -72,7 +72,9 @@ Original tileset, Zeus, totem, wood, metal, cloud, water and mirror sheets remai
 
 ## Verification
 
-`npm test` runs **62 tests** for geometry, simulation, cycles, campaign, monsters and subtitle pagination. All 35 solutions are checked at 30, 60 and 120 Hz with sequential shots and real ammunition. Coverage includes timing failures, moving collisions, front/back impacts, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
+`scripts/unlimited-check.cjs` verifies repeated misses, victory, one-star and three-star scoring, restart and saved progress on desktop and touch.
+
+`npm test` runs **63 tests** for geometry, simulation, cycles, campaign, monsters and subtitle pagination. All 35 solutions are checked at 30, 60 and 120 Hz with sequential shots, unlimited attempts and efficiency targets. Coverage includes timing failures, moving collisions, front/back impacts, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
 
 Browser checks require an external Playwright installation and Chrome/Edge:
 

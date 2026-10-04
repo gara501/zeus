@@ -59,16 +59,15 @@ test('Wood plus stone needs four shots and resets without preserving damage', ()
   assert.equal(state.shots, 4);
   const fresh = createState(levels[9]);
   assert.ok(fresh.breakables.every(item => !item.destroyed && item.hits === 0));
-  assert.equal(fresh.remaining, 5);
+  assert.equal(fresh.shots, 0);
 });
 
-test('The last ray burning a box loses after impact, without a fictitious pending release', () => {
+test('Burning a box keeps the level playable without a fictitious pending release', () => {
   const initial = createState(levels[7]);
-  initial.remaining = 1;
   const fired = shoot(initial);
   assert.equal(fired.status, 'playing');
   const { state } = travel(fired, .5);
-  assert.equal(state.status, 'lost');
+  assert.equal(state.status, 'playing');
   assert.equal(state.breakables[0].destroyed, true);
   assert.equal(state.delayed.length, 0);
 });

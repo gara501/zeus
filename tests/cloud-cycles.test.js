@@ -22,7 +22,7 @@ test('A cyclic cloud stores a single charge and blocks firing until the complete
   assert.equal(state.delayed.length, 1);
   assert.equal(hasActiveShot(state), true);
   const result = stepSimulation(state, [fire], .1);
-  assert.equal(result.state.remaining, state.remaining);
+  assert.equal(result.state.shots, state.shots);
   assert.ok(!result.events.some(event => event.type === 'fire'));
   const restored = createState(levels[18]);
   assert.equal(restored.clouds[0].storedRayId, null);

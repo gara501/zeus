@@ -2,6 +2,7 @@ import * as L from 'littlejsengine';
 import { MIRROR_SCALE } from './config.js';
 import { levels } from './levels.js';
 import { createState, stepSimulation } from './simulation.js';
+import { earnedStars } from './scoring.js';
 import { normalize, add, scale } from './ray.js';
 import { drawGame, fitCamera } from './render.js';
 import { playEvents } from './audio.js';
@@ -188,7 +189,7 @@ function gameUpdate() {
       mode = 'victory';
       visual.victoryAt = visual.time;
       dragging = null;
-      stars = 1 + Number(state.shots <= levels[index].idealShots) + Number(state.shots <= levels[index].idealShots && state.time <= levels[index].threeStarTime);
+      stars = earnedStars(levels[index], state);
       save.stars[levels[index].id] = Math.max(stars, save.stars[levels[index].id] || 0);
       writeSave(save);
       phaseTime = 0;

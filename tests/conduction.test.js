@@ -45,12 +45,11 @@ test('water fans out to both targets and conductor arrival times increase with d
   assert.ok(Object.values(result.state.branchCounts).every(count => count <= MAX_BRANCHES));
 });
 
-test('metal forks reach both outputs and retain a pending pulse after the last shot', () => {
+test('metal forks reach both outputs and retain a pending pulse while firing is busy', () => {
   let state = createState(levels[6]);
-  state.remaining = 1;
   state = shoot(state);
   state = travel(state, .32).state;
-  assert.equal(state.remaining, 0);
+  assert.equal(state.shots, 1);
   assert.equal(state.rays.length, 0);
   assert.ok(state.pulses.length > 0);
   assert.equal(state.status, 'playing');
@@ -66,12 +65,11 @@ test('closed metal loops visit each cell once and finish instead of circulating 
   for (const [x, y] of [[0, -.5], [1, -.5], [0, .5], [1, .5]]) rows[3.5 - y][x + 7] = '=';
   level.map = rows.map(row => row.join(''));
   let state = createState(level);
-  state.remaining = 1;
   state = stepSimulation(state, [{ type: 'fire', direction: normalize({ x: 5, y: 1 }) }], 1 / 60).state;
   const result = travel(state, 8);
   assert.equal(result.events.filter(event => event.type === 'conduct').length, 4);
   assert.equal(result.state.pulses.length, 0);
-  assert.equal(result.state.status, 'lost');
+  assert.equal(result.state.status, 'playing');
 });
 
 test('reentry of the same lineage is grounded; independent shots can reuse a network', () => {
@@ -95,12 +93,11 @@ test('reset removes pending conduction and visual charge', () => {
 
 test('branch budget limits a wave without leaving stuck pending work', () => {
   let state = createState(levels[4]);
-  state.remaining = 1;
   state = shoot(state);
   state.branchCounts[1] = MAX_BRANCHES - 2;
   const result = travel(state, 8);
   assert.equal(result.state.branchCounts[1], MAX_BRANCHES);
   assert.equal(result.state.pulses.length, 0);
   assert.equal(result.state.rays.length, 0);
-  assert.equal(result.state.status, 'lost');
+  assert.equal(result.state.status, 'playing');
 });

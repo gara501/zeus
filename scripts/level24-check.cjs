@@ -42,12 +42,12 @@ let browser;
         await page.mouse.up();
       }
     }
-    assert.equal(await page.locator('#ammo').textContent(), '3');
+    assert.equal(await page.locator('#ammo').textContent(), '0');
     await page.screenshot({ path: `artifacts/level24-${mobile ? 'mobile' : 'desktop'}.png` });
     const point = await position(-4, -2.5);
     if (mobile) await page.touchscreen.tap(point.x, point.y);
     else { await page.mouse.move(point.x, point.y); await page.keyboard.press('Space'); }
-    await page.waitForFunction(() => document.querySelector('#ammo').textContent === '2');
+    await page.waitForFunction(() => document.querySelector('#ammo').textContent === '1');
     await page.waitForTimeout(1500);
     assert.equal(await page.locator('#shot-state').textContent(), 'Bolt in flight · wait until it finishes');
     if (!mobile) {
@@ -59,7 +59,7 @@ let browser;
       await page.locator('#dialog-button').click();
     }
     await page.waitForSelector('body[data-mode="victory"]');
-    assert.equal(await page.locator('#ammo').textContent(), '2');
+    assert.equal(await page.locator('#ammo').textContent(), '1');
     assert.deepEqual(errors, []);
     console.log(`Level 24 passed on ${mobile ? 'mobile' : 'desktop'}: two adjustable mirrors, full cloud relay, one-bolt victory.`);
     await page.close();

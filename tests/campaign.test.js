@@ -9,7 +9,7 @@ test('All 35 lessons have serial solutions at 30, 60 and 120 Hz', () => {
     const { state } = runPlan(level, solutionPlans[index], hz);
     assert.equal(state.status, 'won', `${level.id} @ ${hz} Hz: ${JSON.stringify(state.totems.map(t => [t.x, t.y, t.hits]))}`);
     assert.equal(state.shots, level.idealShots, level.id);
-    assert.ok(state.remaining >= 0);
+    assert.ok(Number.isInteger(state.shots));
   }
 });
 

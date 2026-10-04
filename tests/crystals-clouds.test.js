@@ -47,9 +47,8 @@ test('crystal obeys the branch budget and reset restores its initial phase', () 
   assert.deepEqual(createState(levels[10]), initial);
 });
 
-test('charge cloud holds the last ray and releases it at its exact configured time', () => {
+test('charge cloud holds the ray and releases it at its exact configured time', () => {
   const initial = createState(levels[11]);
-  initial.remaining = 1;
   const charged = travel(shoot(initial), .5).state;
   assert.equal(charged.rays.length, 0);
   assert.equal(charged.delayed.length, 1);

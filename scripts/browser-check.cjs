@@ -58,16 +58,16 @@ let browser, page;
   const pausedClock = await text('#clock');
   await page.waitForTimeout(1100);
   assert.equal(await text('#clock'), pausedClock);
-  assert.equal(await text('#ammo'), '3');
+  assert.equal(await text('#ammo'), '0');
   await page.locator('#dialog-button').click();
   await shootAt(4, 1.5);
   await page.waitForTimeout(150);
   assert.equal(await text('#shot-state'), 'Bolt in flight · wait until it finishes');
   await page.keyboard.press('Space');
-  assert.equal(await text('#ammo'), '2', 'A busy shot must not spend more ammunition');
+  assert.equal(await text('#ammo'), '1', 'A busy attempt must not increase the shot count');
   await page.waitForFunction(() => document.querySelector('#dialog-title').textContent === 'Victory!');
   console.log('Level 1 and pause passed');
-  assert.equal(await text('#ammo'), '2');
+  assert.equal(await text('#ammo'), '1');
   await page.waitForFunction(() => document.querySelector('#level-name').textContent === 'The Secret of Bronze');
   await page.waitForTimeout(650);
   await shootAt(-1, -1.5);
@@ -81,7 +81,7 @@ let browser, page;
   await page.mouse.move(anglePoint.x, anglePoint.y, { steps: 8 });
   await page.waitForTimeout(100);
   await page.mouse.up();
-  assert.equal(await text('#ammo'), '3', 'Dragging a mirror must not fire');
+  assert.equal(await text('#ammo'), '0', 'Dragging a mirror must not fire');
   await page.screenshot({ path: path.resolve('artifacts/level-3.png') });
   await shootAt(1, -1.5);
   const extraLevels = [
@@ -96,7 +96,7 @@ let browser, page;
     ['The Thunder That Waits', 0, -.5, 'charge-cloud', 1, 3],
     ['Choosing the Sky', -2, 1.5, 'cloud-trap'],
   ];
-  for (const [name, x, y, image, neededShots = 1, initialCharges = 3] of extraLevels) {
+  for (const [name, x, y, image, neededShots = 1] of extraLevels) {
     await page.waitForFunction(name => document.querySelector('#level-name').textContent === name, name);
     await page.waitForTimeout(650);
     assert.equal(await page.evaluate(() => {
@@ -109,9 +109,9 @@ let browser, page;
       await shootAt(-2, -.5);
       await page.waitForTimeout(500);
       assert.equal(await text('#objectives'), '0/1');
-      assert.equal(await text('#ammo'), '2');
+      assert.equal(await text('#ammo'), '1');
       await page.keyboard.press('KeyR');
-      await page.waitForFunction(() => document.querySelector('#ammo').textContent === '3');
+      await page.waitForFunction(() => document.querySelector('#ammo').textContent === '0');
     }
     await shootAt(x, y);
     if (image === 'water' || image === 'charge-cloud') {
@@ -135,7 +135,7 @@ let browser, page;
       await shootAt(x, y);
     }
     await page.waitForFunction(() => document.querySelector('#dialog-title').textContent === 'Victory!' && !document.querySelector('#overlay').hidden);
-    assert.equal(await text('#ammo'), String(initialCharges - neededShots));
+    assert.equal(await text('#ammo'), String(neededShots));
     console.log(`${name} passed`);
     if (image === 'water-branches') await story(1);
     if (image === 'clear-path') await story(2);
@@ -154,7 +154,7 @@ let browser, page;
     if (i < 2) { await waitReady(); assert.equal(await text('#objectives'), '0/1'); }
   }
   await waitVictory();
-  assert.equal(await text('#ammo'), '1');
+  assert.equal(await text('#ammo'), '3');
   console.log('Multi-hit totem passed');
   await waitLesson('The Order of Thunder');
   await shootAt(3, -.5);
@@ -169,7 +169,7 @@ let browser, page;
     if (y !== -2.5) await waitReady();
   }
   await waitVictory();
-  assert.equal(await text('#ammo'), '2');
+  assert.equal(await text('#ammo'), '3');
   console.log('Ordered totems and wrong-order reset passed');
   await story(3);
   await waitLesson('Before the Light Fades');
@@ -269,7 +269,7 @@ let browser, page;
     return (minutes * 60 + seconds) % 6 === 0;
   });
   await shootAt(-3, -1.5); await waitVictory();
-  assert.equal(await text('#ammo'), '1');
+  assert.equal(await text('#ammo'), '3');
   console.log('Ordered rebounds, alternative timed routes and final combination passed');
   await page.waitForSelector('body[data-mode="story"]');
   assert.equal(await text('#narrator-name'), 'EAGLE');
@@ -293,8 +293,8 @@ let browser, page;
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
   await shootAt(5, -2.5);
   await optionAction(page, 'restart');
-  await page.waitForFunction(() => document.querySelector('#ammo').textContent === '3');
-  assert.equal(await text('#ammo'), '3');
+  await page.waitForFunction(() => document.querySelector('#ammo').textContent === '0');
+  assert.equal(await text('#ammo'), '0');
   assert.equal(await text('#clock'), '00:00');
 
   await page.setViewportSize({ width: 390, height: 740 });

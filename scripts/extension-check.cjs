@@ -65,7 +65,7 @@ let browser, page;
       }
     }
     await page.waitForSelector('body[data-mode="victory"]');
-    assert.equal(Number(await page.locator('#ammo').textContent()), levels[index].shots - levels[index].idealShots);
+    assert.equal(Number(await page.locator('#ammo').textContent()), levels[index].idealShots);
     console.log(`Level ${index + 1} passed with ${levels[index].idealShots} bolts`);
     if (index === 29) await scene('aguila2.png', 'survive the Titans');
   }
