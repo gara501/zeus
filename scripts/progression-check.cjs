@@ -27,7 +27,7 @@ let browser;
   assert.equal(await page.locator('#start-button').textContent(), 'Continue');
   await page.locator('#levels-button').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'levels');
-  assert.equal(await page.locator('.level-card').count(), 25);
+  assert.equal(await page.locator('.level-card').count(), 35);
   assert.equal(await page.locator('.level-card:enabled').count(), 2);
   assert.equal(await page.locator('[data-level="0"]').getAttribute('class'), 'level-card completed');
   assert.equal(await page.locator('[data-level="2"]').isDisabled(), true);

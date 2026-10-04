@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chapterAfter, chapters, intro, training, cinematicAssets } from '../src/cinematics.js';
+import { chapterAfter, chapters, intro, training, spiritTraining, finalTrial, cinematicAssets } from '../src/cinematics.js';
 
 test('The story follows checkpoints five, ten and fifteen', () => {
   for (let completed = 1; completed < 25; completed++) {
@@ -19,4 +19,14 @@ test('The Titan scene closes the campaign, including a final checkpoint', () => 
   assert.equal(chapterAfter(25, 25), chapters[3]);
   assert.equal(chapterAfter(15, 15), chapters[3]);
   assert.equal(chapterAfter(20, 25), null);
+});
+
+test('The eagle introduces levels 26 and 31, and the ending follows level 35', () => {
+  assert.equal(chapterAfter(25, 35), spiritTraining);
+  assert.equal(chapterAfter(30, 35), finalTrial);
+  assert.equal(chapterAfter(35, 35), chapters[3]);
+  for (const scene of [spiritTraining, finalTrial]) {
+    assert.ok(cinematicAssets.includes(scene.image));
+    assert.equal(scene.narrator, 'EAGLE');
+  }
 });

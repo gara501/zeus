@@ -1,3 +1,4 @@
+import { advancedLevels } from './advanced-levels.js';
 // ASCII lays out cells; metadata supplies arbitrary mirror angles.
 function board(placements) {
   const cells = Array.from({ length: 8 }, (_, row) =>
@@ -253,4 +254,5 @@ export const levels = [
     totems: [{ x: 4, y: -2.5, group: 'titan' }, { x: -1, y: 2.5, group: 'titan' }],
     groups: [{ id: 'titan', type: 'timed', window: 1.25 }],
   },
+  ...advancedLevels(board),
 ];

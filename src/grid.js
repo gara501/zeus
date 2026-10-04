@@ -42,5 +42,10 @@ export function loadLevel(level) {
   if (!zeus || !door || !totems.length) throw new Error('A level needs Zeus, a door and a totem');
   const groups = (level.groups ?? []).map(group => ({ ...group, deadline: null, next: 0, completed: false,
     members: totems.filter(item => item.group === group.id).sort((a, b) => a.order - b.order).map(item => item.id) }));
-  return { zeus, door, walls, mirrors, totems, groups, breakables, crystals, clouds, conductors: connectConductors(conductors, walls, level.metalPorts) };
+  const monsters = (level.monsters ?? []).map((monster, index) => {
+    if (![monster.from, monster.to, monster.y, monster.speed, monster.phase ?? 0].every(Number.isFinite) || !(monster.to > monster.from) || !(monster.speed > 0)) throw new Error('Invalid monster patrol');
+    return { ...monster, id: `monster-${index}`, type: 'monster', phase: monster.phase ?? 0,
+      radius: .42, destroyed: false, destroyedAt: null, facing: 1, x: monster.from };
+  });
+  return { zeus, door, walls, mirrors, totems, groups, breakables, crystals, clouds, monsters, conductors: connectConductors(conductors, walls, level.metalPorts) };
 }

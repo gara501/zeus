@@ -83,6 +83,7 @@ export function createUI(actions, levels) {
       [...element('ammo-pips').children].forEach((pip, number) => pip.classList.toggle('spent', number >= state.remaining));
       element('objectives').textContent = `${state.totems.filter(totem => totem.active).length}/${state.totems.length}`;
       element('clock').textContent = `${String(Math.floor(state.time / 60)).padStart(2, '0')}:${String(Math.floor(state.time % 60)).padStart(2, '0')}`;
+      element('clock').dataset.seconds = state.time.toFixed(4);
       element('hint').textContent = dragging ? 'Rotate freely. Release the mirror when its angle is right.' : level.hint;
       if (touchLayout.matches && level.id === 'turn') element('hint').textContent = 'Use M1 to angle the blue mirror toward the totem, then tap its center to fire.';
       element('mentor').textContent = level.mentor;

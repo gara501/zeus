@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dialoguePage } from '../src/dialogue.js';
-import { intro, training, chapters } from '../src/cinematics.js';
+import { intro, training, chapters, spiritTraining, finalTrial } from '../src/cinematics.js';
 
 test('Two-line fragments preserve every word of every scene at narrow and wide sizes', () => {
-  for (const scene of [intro, training, ...chapters]) {
+  for (const scene of [intro, training, spiritTraining, finalTrial, ...chapters]) {
     for (const width of [24, 70, 120]) {
       const words = scene.text.split(/\s+/), pages = [];
       let start = 0;

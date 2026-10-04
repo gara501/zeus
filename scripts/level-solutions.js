@@ -19,6 +19,16 @@ export const solutionPlans = [
   [rotate([-2, 1.5, Math.PI / 4]), fire(-2, -1.5), rotate([-2, 1.5, (Math.PI / 2 + Math.atan2(-2, 4)) / 2]), fire(-2, -1.5), rotate([-2, 1.5, -Math.PI / 4]), fire(-2, -1.5)],
   [rotate([-4, -2.5, Math.PI / 4], [-4, 1.5, Math.PI / 4]), fire(-4, -2.5)],
   [rotate([1, -1.5, Math.PI / 4], [-4, -.5, -Math.PI / 4]), ...Array.from({ length: 4 }, () => fire(-3, -1.5))],
+  [rotate([-2, -2.5, Math.PI / 4], [2, 1.5, -Math.PI / 4]), fire(-2, -2.5)],
+  [rotate([-2, -2.5, Math.PI / 4]), fire(-2, -2.5), { at: 1, fire: [-2, -2.5] }],
+  [rotate([-2, -1.5, 0], [1, -1.5, Math.PI / 4]), ...Array.from({ length: 4 }, () => fire(-3, -1.5)), { at: 3, during: true, rotate: [[-2, -1.5, -Math.PI / 4], [1, -1.5, 0]] }],
+  [rotate([3, 1.5, -Math.PI / 4]), fire(-2, -1.5), { at: 1, fire: [-2, -1.5] }, rotate([3, 1.5, -Math.PI / 8]), fire(-2, -1.5)],
+  [rotate([1, -1.5, Math.PI / 4], [-4, -.5, -Math.PI / 4]), ...Array.from({ length: 4 }, () => fire(-3, -1.5))],
+  [rotate([-2, -1.5, Math.PI / 4], [3, 1.5, -Math.PI / 4]), { at: 3, fire: [-2, -1.5] }, fire(-2, -1.5)],
+  [rotate([-2, -.5, Math.PI / 4]), { at: 3, fire: [-2, -.5] }, fire(-2, -.5), rotate([-2, -.5, -Math.PI / 4]), { at: 8, fire: [-2, -.5] }, fire(-2, -.5)],
+  [rotate([-4, -2.5, Math.PI / 4], [-4, 1.5, Math.PI / 4]), fire(-4, -2.5), { at: 4.2, fire: [-4, -2.5] }, fire(-4, -2.5)],
+  [fire(-3, -.5), { at: 1, fire: [-2, -.5] }, { at: 5, fire: [-2, -.5] }],
+  [rotate([1, -1.5, Math.PI / 4], [-4, -.5, -Math.PI / 4]), ...Array.from({ length: 5 }, () => fire(-3, -1.5))],
 ];
 
 export function runPlan(level, plan, hz = 60) {

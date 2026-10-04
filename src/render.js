@@ -2,9 +2,10 @@ import * as L from 'littlejsengine';
 import { PALETTE, MIRROR_SCALE } from './config.js';
 import { add, scale, mirrorEnds, nearestHit, normalize, reflect } from './ray.js';
 import { crystalAngle, cloudReleaseTime } from './elements.js';
+import { monsterPose } from './monsters.js';
 import { drawFloorSprite, drawWallSprite, drawDoorSprite, drawZeusSprite,
   drawTotemSprite, drawWoodSprite, drawMetalSprite, drawCloudSprite,
-  drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite } from './sprites.js';
+  drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite, drawMonsterSprite } from './sprites.js';
 
 const color = hex => new L.Color().setHex(hex);
 const C = Object.fromEntries(Object.entries(PALETTE).map(([name, hex]) => [name, color(hex)]));
@@ -199,6 +200,14 @@ export function drawGame(state, aim, hovered, dragging, particles, mode, visual)
   let mirrorNumber = 0;
   for (const mirror of state.mirrors) drawMirror(mirror, mirror.id === hovered, mirror.id === dragging, state.time, mirror.rotatable ? ++mirrorNumber : null);
   for (const totem of state.totems) drawTotem(totem, state);
+  for (const monster of state.monsters ?? []) {
+    if (!monster.destroyed) {
+      const pose = monsterPose(monster, state.time);
+      line({ x: monster.from, y: monster.y - .5 }, { x: monster.to, y: monster.y - .5 }, .025, C.muted);
+      circle(offset(pose, -pose.facing * .65, 0), .12, C.gold);
+    }
+    drawMonsterSprite(monster, state.time, visual.time);
+  }
   if (mode === 'playing' && !dragging) {
     const hit = nearestHit(state, state.zeus, aim);
     const distance = hit?.distance ?? 20;

@@ -13,18 +13,30 @@ export const training = {
   text: 'My young Zeus knows the paths of lightning. But knowing them is not enough: now he must bring his lessons together. Beyond these doors await bounces, paths to open and charges to release at just the right moment. Breathe, observe and trust your wits. Now the real training begins.',
 };
 export const BASIC_LEVEL_COUNT = 16;
+export const spiritTraining = {
+  image: new URL('./sprites/transitions/aguila1.png', import.meta.url).href,
+  narrator: 'EAGLE', label: 'THE SPIRIT OF THUNDER', title: 'Become One with the Lightning', button: 'Train Your Spirit',
+  text: 'Zeus, you have learned to guide the thunder. Now you will learn to master your spirit and unite it with the lightning. A scattered mind wastes its power. Breathe, observe every path and let intention become action. These trials demand patience, precision and the strength to bring all your lessons together.',
+};
+export const finalTrial = {
+  image: new URL('./sprites/transitions/aguila2.png', import.meta.url).href,
+  narrator: 'EAGLE', label: 'THE FINAL FIVE TRIALS', title: 'Beyond Your Limits', button: 'Face the Final Trials',
+  text: 'I will push you to your limits, Zeus. Unless you unite your whole being with the lightning, you will not survive the Titans. Stone guardians now patrol your path. Their fronts absorb thunder; strike from behind to shatter them. Watch their steps, trust the rhythm of the clouds and make every bolt count. Your final five trials begin now.',
+};
 export const chapters = [
   { image: new URL('./sprites/transitions/1.png', import.meta.url).href, title: 'One Spark, Many Paths', text: 'I cared for Zeus when he was small. He once thought all he needed was the strongest bolt. But every spark taught him something new: even the power of the sky must find its path.' },
   { image: new URL('./sprites/transitions/2.png', import.meta.url).href, title: 'The Strength of Learning', text: 'In the ancient temples, Zeus learned to look before firing. Bronze could change the course of thunder; patience could change his own. Little by little, he understood that wisdom was another kind of power.' },
   { image: new URL('./sprites/transitions/3.png', import.meta.url).href, title: 'Children of the Same Sky', text: 'Zeus did not walk this path alone. With his siblings, he learned to listen to water and respect the shadows. Each had a gift. One day they would need to unite them, for beyond the mountains something ancient was awakening.' },
-  { image: new URL('./sprites/transitions/4.png', import.meta.url).href, title: 'Facing the Titan', text: 'And that day came. A Titan rose before Zeus, as vast as a mountain. My little one was no longer the child who cast sparks without direction. Now he could command the thunder. His apprenticeship was over… but his true story was only beginning.' },
+  { image: new URL('./sprites/transitions/4.png', import.meta.url).href, narrator: 'EAGLE', title: 'Facing the Titan', text: 'The final trial is complete, Zeus. Your spirit and the lightning now move as one. Before you stands a Titan, vast as a mountain. Carry your patience, your courage and every lesson into the storm. Your apprenticeship is over… but your true story is only beginning.' },
 ];
 export function chapterAfter(completed, total) {
   if (completed === total) return chapters[3];
   if (completed === BASIC_LEVEL_COUNT) return training;
+  if (completed === 25) return spiritTraining;
+  if (completed === 30) return finalTrial;
   return completed % 5 === 0 && completed <= 15 ? chapters[completed / 5 - 1] ?? null : null;
 }
-export const cinematicAssets = [titleImage, goatImage, intro.image, training.image, ...chapters.map(chapter => chapter.image)];
+export const cinematicAssets = [titleImage, goatImage, intro.image, training.image, spiritTraining.image, finalTrial.image, ...chapters.map(chapter => chapter.image)];
 
 export function createCinematics(actions, levels) {
   const root = document.createElement('section');
@@ -33,7 +45,7 @@ export function createCinematics(actions, levels) {
     <div id="loading-screen" role="status"><span class="loading-bolt">ϟ</span><h1>Preparing the Thunder</h1><p id="loading-label">Loading images…</p><progress id="loading-progress" max="1" value="0"></progress><button id="loading-retry" hidden>Retry</button></div>
     <div id="title-screen" hidden><h1 class="sr-only">Zeus's Path</h1><button id="start-button">Start</button><button id="levels-button" hidden>Levels</button><button id="title-music">Music: on</button><p>The path of thunder begins with you</p></div>
     <section id="levels-screen" aria-labelledby="levels-title" hidden><div class="levels-heading"><div><p class="eyebrow">THE PATH OF THUNDER</p><h2 id="levels-title">Your Lessons</h2><p id="levels-progress"></p></div><button id="levels-back">Back to Home</button></div><div class="level-grid">${levels.map((level, index) => `<button class="level-card" data-level="${index}"><strong>${String(index + 1).padStart(2, '0')}</strong><span>${level.name}</span><small></small></button>`).join('')}</div><p class="levels-help">Complete a lesson to unlock the next.</p></section>
-    <section id="story-scene" aria-labelledby="story-title" hidden><div class="narrator" role="img" aria-label="Amalthea, the goat who tells the story"><img src="${goatImage}" alt="" /></div><div class="story-copy"><p class="eyebrow">AMALTHEA · <span id="chapter-label"></span></p><h2 id="story-title"></h2><p id="story-text"></p><button id="story-next">Reveal Text</button></div></section>
+    <section id="story-scene" aria-labelledby="story-title" hidden><div class="narrator" role="img" aria-label="Amalthea, the goat who tells the story"><img src="${goatImage}" alt="" /></div><div class="story-copy"><p class="eyebrow"><span id="narrator-name">AMALTHEA</span> · <span id="chapter-label"></span></p><h2 id="story-title"></h2><p id="story-text"></p><button id="story-next">Reveal Text</button></div></section>
     <div id="cinematic-fade" aria-hidden="true"></div>`;
   document.body.append(root);
   const el = id => root.querySelector(`#${id}`);
@@ -79,6 +91,11 @@ export function createCinematics(actions, levels) {
       root.dataset.storyComplete = 'false';
       el('scene-background').src = chapter.image;
       el('story-title').textContent = chapter.title;
+      const eagle = chapter.narrator === 'EAGLE';
+      el('narrator-name').textContent = eagle ? 'EAGLE' : 'AMALTHEA';
+      root.querySelector('.narrator').classList.toggle('eagle', eagle);
+      root.querySelector('.narrator').setAttribute('aria-label', eagle ? 'The eagle, Zeus’s guide' : 'Amalthea, the goat who tells the story');
+      root.querySelector('.narrator img').src = eagle ? finalTrial.image : goatImage;
       el('chapter-label').textContent = chapter.label ?? (ending ? 'FINAL CHAPTER' : `CHAPTER ${chapters.indexOf(chapter) + 1}`);
       el('story-text').textContent = '';
       root.dataset.ending = String(ending);

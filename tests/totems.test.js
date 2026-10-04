@@ -14,8 +14,8 @@ function shoot(state, target) {
 }
 const hit = (state, index, time) => hitTotem(state, state.totems[index], time, []);
 
-test('all levels allocate three to five shots', () => {
-  for (const level of levels) assert.ok(level.shots >= 3 && level.shots <= 5);
+test('all levels allocate three to six shots, reserving six for the final trial', () => {
+  for (const [index, level] of levels.entries()) assert.ok(level.shots >= 3 && level.shots <= (index === 34 ? 6 : 5));
 });
 
 test('a short shot unlocks firing immediately after impact without an extra cooldown', () => {

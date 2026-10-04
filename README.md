@@ -10,7 +10,7 @@ npm run build
 npm run preview
 ```
 
-The campaign has **25 sequential levels**, entirely in English. Levels 1–16 teach the mechanics; levels 17–25 combine mirror chains, clearing paths, cyclic clouds, crystals, synchronized branches, rotation during a charge, ordered targets and timed windows. The final level combines a crate, a block, three mirrors, metal, a cloud, a crystal and two timed totems.
+The campaign has **35 sequential levels**, entirely in English. Levels 1–16 teach the mechanics; levels 17–25 combine the original systems. The eagle leads levels 26–30 through longer mirror chains, synchronized clouds, ordered releases and tighter timing. Levels 31–35 add patrolling stone guardians. The final trial combines opening a breach, conductors, cloud cycles, crystal branches, two guardians and a 1.05-second totem window. Existing progress remains valid, unlocking level 26 after level 25.
 
 Level 24, **The Return of Thunder**, uses one continuous circuit: adjust two blue mirrors, make three entry bounces, transfer the charge between two cyclic clouds, then return through the fourth mirror and the upper bronze mirror to reach the protected totem. The clouds alternate every two seconds; the first releases at 4, 8, 12… seconds and the second at 2, 6, 10… seconds. Walls prevent direct shots and require both clouds. The ideal solution uses one bolt and five total bounces.
 
@@ -20,7 +20,7 @@ Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate i
 
 On mobile and narrow screens, use the bottom **M1, M2, …** sliders to rotate the matching blue mirrors. Each slider shows its angle and supports half-degree adjustments from 0° to 180°. Tap the board to aim and fire, including directly at a mirror. Sliders remain usable during a lightning shot or cloud charge, and restart restores their initial angles.
 
-Each level provides 3–5 bolts. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt consumes no ammunition and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
+Levels provide 3–5 bolts, with six reserved for the final trial. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt consumes no ammunition and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
 
 The header shows only the current level. After the first victory, **Levels** appears on the title screen: a grid with earned stars, completed levels available to replay, the next unlocked level and locked future levels. **Continue** resumes the first unfinished lesson. **Home** returns to the title during play, pause or defeat. Progress and audio preferences are saved locally.
 
@@ -40,6 +40,7 @@ The title buttons share the same dimensions, font and font size.
 - **Water:** conducts at 8 units/s through connected cells and releases through open edges.
 - **Metal:** conducts at 14 units/s through connected networks and releases through terminals configured with `metalPorts`. Every junction follows all branches. Each cell is visited once per pulse; recirculation within its lineage is absorbed.
 - **Totems:** persistent, multiple-hit, ordered or timed targets. Each actual arrival counts. A wrong-order hit resets its group. The first impact opens a timed window; expiration clears all charge in that group. The exact deadline is valid. Completed groups remain active.
+- **Stone guardians (levels 31–35):** deterministic horizontal patrols between marked endpoints. Front and side impacts consume the bolt without damaging the guardian. A rear impact consumes the bolt and shatters the guardian, permanently clearing its collision; rubble is cosmetic. The gold marker identifies its back. Patrol movement and collisions use the level clock, freeze on pause and reset on restart. Moving collisions are swept through each turn, preventing tunnelling between frames. Walking and destruction use `src/sprites/monster.png`.
 
 Pause freezes clocks, lightning, phases, cycles and timed windows. Restart restores the entire level. Defeat waits for all bolts, conduction and pending charges to finish. A shot has a 128-branch limit, a bolt lifetime limit and an interaction budget.
 
@@ -53,7 +54,7 @@ Pause freezes clocks, lightning, phases, cycles and timed windows. Restart resto
 
 - **UI:** [Tiny RPG – Mana Soul GUI](https://tiopalada.itch.io/tiny-rpg-mana-soul-gui), by Gabriel “tiopalada” Lima, CC0 1.0. Frames, buttons and portrait; colors adapted with CSS filters. License included in `public/licenses/Mana-Soul-CC0.html`.
 - **1.mp3 (levels 1–16):** Music by <a href="https://pixabay.com/es/users/openmindaudio-53602733/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=606177">OpenMindAudio</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=606177">Pixabay</a>
-- **2.mp3 (levels 17–25):** Music by <a href="https://pixabay.com/es/users/tunetank-50201703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=347627">Tunetank</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=347627">Pixabay</a>
+- **2.mp3 (levels 17–35):** Music by <a href="https://pixabay.com/es/users/tunetank-50201703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=347627">Tunetank</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=347627">Pixabay</a>
 - **Fonts:** Cinzel by Natanael Gama and Pixelify Sans by Stefie Justprince, both under SIL Open Font License 1.1. Licenses are included in `public/licenses/`.
 - **Engine and tools:** LittleJS and Vite, MIT. See [CREDITS.md](CREDITS.md) for complete credits and links.
 
@@ -61,15 +62,15 @@ Pause freezes clocks, lightning, phases, cycles and timed windows. Restart resto
 
 Mana Soul GUI frames and buttons are adapted to bronze with CSS filters, parchment panels and a Zeus portrait. Cinzel is used for headings; Pixelify Sans for HUD, buttons and labels. Ammunition is shown as charges that dim when spent. The outer background is a vector cave with columns and soft blue light. Fonts, sheets and licenses are bundled locally.
 
-The title uses `src/sprites/transitions/title.png`, with visible loading progress and retry on failure. Starting from level 1 shows `intro.png`: Amalthea introduces the goal of lighting the totems and preparing Zeus for his future. Scenes 1, 2 and 3 follow levels 5, 10 and 15. After level 16, `ready.png` announces the real training before level 17. Image 4 closes level 25 with Zeus facing the Titan.
+The title uses `src/sprites/transitions/title.png`, with visible loading progress and retry on failure. Starting from level 1 shows `intro.png`: Amalthea introduces the goal of lighting the totems and preparing Zeus for his future. Scenes 1, 2 and 3 follow levels 5, 10 and 15. After level 16, `ready.png` announces the real training before level 17. After level 25, `aguila1.png` introduces the eagle and the unity of spirit and lightning; `aguila2.png` follows level 30 and introduces the last five trials and guardians. Image 4 closes level 35 with Zeus facing the Titan. Continue also shows the eagle scene when resuming at the beginning of either new chapter.
 
-Narration is defined in `src/cinematics.js`. Amalthea appears beside a compact subtitle panel with at most two lines. Each fragment disappears after a reading interval and the next appears automatically, preserving the complete narration. Click to reveal the current fragment or advance early; the final action continues into the game. With reduced motion, each fragment is revealed immediately. Scenes freeze gameplay. The ending returns to the title without clearing stars. Continuing an advanced campaign does not replay the introduction.
+Narration is defined in `src/cinematics.js`. Amalthea guides the original lessons; the eagle narrates the two new chapters and ending. Their portraits appear beside a compact subtitle panel with at most two lines. Each fragment disappears after a reading interval and the next appears automatically, preserving the complete narration. Click to reveal the current fragment or advance early; the final action continues into the game. With reduced motion, each fragment is revealed immediately. Scenes freeze gameplay. The ending returns to the title without clearing stars. Continuing an advanced campaign does not replay the introduction.
 
 Original tileset, Zeus, totem, wood, metal, cloud, water and mirror sheets remain intact. Crops and animations are defined in `src/sprites.js`. Order/hit indicators, arrows and timing remain visible. Zeus animations preserve their pivots and pause correctly. Broken blocks use rubble from the tileset.
 
 ## Verification
 
-`npm test` runs **56 tests** for geometry, simulation, cycles, campaign and subtitle pagination. All 25 solutions are checked at 30, 60 and 120 Hz with sequential shots and real ammunition. Coverage includes timing failures, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
+`npm test` runs **62 tests** for geometry, simulation, cycles, campaign, monsters and subtitle pagination. All 35 solutions are checked at 30, 60 and 120 Hz with sequential shots and real ammunition. Coverage includes timing failures, moving collisions, front/back impacts, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
 
 Browser checks require an external Playwright installation and Chrome/Edge:
 
@@ -82,9 +83,11 @@ node scripts/music-check.cjs /path/to/playwright /path/to/browser http://127.0.0
 node scripts/sprites-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/mobile-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/level24-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
+node scripts/extension-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
+node scripts/monster-mobile-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 ```
 
-Create `artifacts/` before running these checks. The first plays all 25 levels with real controls and verifies progression, stars, pause, order/timing errors, cyclic clouds, mirror chains, rotation during a charge and the ending. The others check loading/retry, scenes, fonts, equal title buttons, narrow/short layouts, sprites, music playback, saved preferences and decoded audio levels. They also work against `npm run preview`. Reference solutions in `scripts/level-solutions.js` are not imported by the shipped game.
+Create `artifacts/` before running these checks. The first plays the original 25 levels with real controls; `extension-check.cjs` plays levels 26–35, both eagle scenes and the final ending. They verify progression, stars, pause, order/timing errors, cyclic clouds, mirror chains and rotation during a charge. The others check loading/retry, scenes, fonts, equal title buttons, narrow/short layouts, sprites, music playback, saved preferences and decoded audio levels. They also work against `npm run preview`. Reference solutions in `scripts/level-solutions.js` are not imported by the shipped game.
 
 The mobile check uses native touch input to drag sliders and solve a mirror level, verifies assignments and restart behavior with multiple mirrors, and checks portrait/landscape layouts plus automatic two-line subtitle transitions.
 

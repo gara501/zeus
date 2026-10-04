@@ -1,5 +1,6 @@
 import * as L from 'littlejsengine';
 import { MIRROR_SCALE } from './config.js';
+import { monsterPose } from './monsters.js';
 
 // Keep the supplied sheets intact. Rectangles are measured in source pixels.
 export const spriteUrls = [
@@ -11,6 +12,7 @@ export const spriteUrls = [
   new URL('./sprites/nubes.png', import.meta.url).href,
   new URL('./sprites/water.png', import.meta.url).href,
   new URL('./sprites/mirror.png', import.meta.url).href,
+  new URL('./sprites/monster.png', import.meta.url).href,
 ];
 const tiles = new Map();
 function region(texture, x, y, width, height) {
@@ -54,6 +56,15 @@ export function drawTotemSprite(totem, time) {
 export function drawCrystalSprite(crystal, angle) {
   // Bronze ember disc from the supplied tileset; retain the rotating phase.
   drawRegion([0, 635, 789, 143, 145], crystal, 1.25, 1.27, L.WHITE, false, -angle);
+}
+
+export function drawMonsterSprite(monster, time, animationTime = time) {
+  const pose = monsterPose(monster, time);
+  const width = 1774 / 8;
+  const frame = monster.destroyed ? Math.min(7, Math.floor((animationTime - monster.destroyedAt) * 8)) : Math.floor(time * 8) % 8;
+  const y = monster.destroyed ? 443 : 100, height = monster.destroyed ? 444 : 330;
+  drawRegion([8, frame * width, y, width, height], { x: pose.x, y: pose.y + (monster.destroyed ? .57 : .4) },
+    1.2, height / width * 1.2, L.WHITE, pose.facing < 0);
 }
 
 const woodBreakFrames = [

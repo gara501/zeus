@@ -12,7 +12,7 @@ import './style.css';
 import './theme.css';
 import { spriteUrls } from './sprites.js';
 import { uiAssetUrls, prepareUIAssets } from './ui-assets.js';
-import { createCinematics, cinematicAssets, preloadImages, chapterAfter, intro } from './cinematics.js';
+import { createCinematics, cinematicAssets, preloadImages, chapterAfter, intro, spiritTraining, finalTrial } from './cinematics.js';
 
 let index = 0;
 let state = createState(levels[index]);
@@ -99,13 +99,16 @@ const cinematics = createCinematics({
     if (mode !== 'title') return;
     const selected = nextLevelIndex(levels, save);
     const begin = () => { load(selected); fadeInto('playing'); };
-    fadeTo(() => { if (selected === 0) showStory(intro, begin); else begin(); });
+    const scene = selected === 0 ? intro : selected === 25 ? spiritTraining : selected === 30 ? finalTrial : null;
+    fadeTo(() => { if (scene) showStory(scene, begin); else begin(); });
   },
   levels: () => { if (mode === 'title') { screen = mode = 'levels'; } },
   back: () => { if (mode === 'levels') { screen = mode = 'title'; } },
   selectLevel: selected => {
     if (mode === 'levels' && isLevelUnlocked(levels, save, selected)) {
-      fadeTo(() => { load(selected); fadeInto('playing'); });
+      const begin = () => { load(selected); fadeInto('playing'); };
+      const scene = !save.stars[levels[selected].id] && (selected === 25 ? spiritTraining : selected === 30 ? finalTrial : null);
+      fadeTo(() => { if (scene) showStory(scene, begin); else begin(); });
     }
   },
   next: () => {

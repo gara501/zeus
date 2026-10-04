@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { levels } from '../src/levels.js';
 import { solutionPlans, runPlan } from '../scripts/level-solutions.js';
 
-test('All 25 lessons have serial solutions at 30, 60 and 120 Hz', () => {
-  assert.equal(levels.length, 25);
+test('All 35 lessons have serial solutions at 30, 60 and 120 Hz', () => {
+  assert.equal(levels.length, 35);
   for (const hz of [30, 60, 120]) for (const [index, level] of levels.entries()) {
     const { state } = runPlan(level, solutionPlans[index], hz);
     assert.equal(state.status, 'won', `${level.id} @ ${hz} Hz: ${JSON.stringify(state.totems.map(t => [t.x, t.y, t.hits]))}`);
@@ -61,7 +61,7 @@ test('The cloud relay requires three entry bounces, both clouds and the return m
 });
 
 test('Advanced routes tolerate small aiming and mirror errors rather than requiring exact angles', () => {
-  for (const index of [16, 17, 21, 22, 23, 24]) for (const sign of [-1, 1]) {
+  for (const index of [16, 17, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34]) for (const sign of [-1, 1]) {
     const plan = structuredClone(solutionPlans[index]);
     for (const action of plan) {
       if (action.rotate) for (const mirror of action.rotate) mirror[2] += sign * Math.PI / 360;

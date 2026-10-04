@@ -1,5 +1,6 @@
 // Geometry has no engine dependencies. Distances are world units.
 import { MIRROR_SCALE } from './config.js';
+import { monsterPose, movingMonsterHit } from './monsters.js';
 export const EPSILON = 1e-5;
 export const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
 export const scale = (v, n) => ({ x: v.x * n, y: v.y * n });
@@ -63,7 +64,7 @@ export function mirrorEnds(mirror) {
   return [add(mirror, scale(tangent, -.72 * MIRROR_SCALE)), add(mirror, scale(tangent, .72 * MIRROR_SCALE))];
 }
 
-export function nearestHit(state, origin, direction, maxDistance = 30) {
+export function nearestHit(state, origin, direction, maxDistance = 30, motion = null) {
   let nearest = null;
   for (const entity of [...state.walls, ...state.mirrors, ...state.totems, ...(state.conductors || []), ...(state.breakables || []).filter(item => !item.destroyed), ...(state.crystals || []), ...(state.clouds || [])]) {
     let hit;
@@ -75,6 +76,11 @@ export function nearestHit(state, origin, direction, maxDistance = 30) {
     if (entity.type === 'crystal') hit = hitCircle(origin, direction, entity, .42, maxDistance);
     if (entity.type === 'chargeCloud' || entity.type === 'trapCloud') hit = hitCircle(origin, direction, entity, .48, maxDistance);
     if (hit && (!nearest || hit.distance < nearest.distance - EPSILON)) nearest = { ...hit, entity };
+  }
+  for (const monster of (state.monsters ?? []).filter(monster => !monster.destroyed)) {
+    const hit = motion ? movingMonsterHit(monster, origin, direction, motion.speed, motion.time, maxDistance / motion.speed)
+      : hitCircle(origin, direction, monsterPose(monster, state.time), monster.radius, maxDistance);
+    if (hit && (!nearest || hit.distance < nearest.distance - EPSILON)) nearest = { ...hit, entity: monster };
   }
   return nearest;
 }

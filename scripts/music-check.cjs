@@ -76,6 +76,6 @@ let browser;
   });
   assert.ok(mix.music.every(track => track.peak < .1 && track.duckedRms < mix.fireRms / 2), 'Music must leave measurable headroom for effects');
   assert.deepEqual(errors, []);
-  console.log('Music check passed: tracks 1–16/17–25, independent saved controls, looping, pause, ducking and decoded mix:', JSON.stringify(mix));
+  console.log('Music check passed: tracks 1–16/17–35, independent saved controls, looping, pause, ducking and decoded mix:', JSON.stringify(mix));
   await browser.close();
 })().catch(async error => { console.error(error); await browser?.close(); process.exitCode = 1; });

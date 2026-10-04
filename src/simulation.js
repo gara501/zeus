@@ -2,6 +2,7 @@ import { loadLevel } from './grid.js';
 import { schedulePulse, releasePulse } from './conduction.js';
 import { crystalAngle, cloudReleaseTime } from './elements.js';
 import { expireGroups, hitTotem } from './totems.js';
+import { monsterPose } from './monsters.js';
 import { add, scale, normalize, reflect, nearestHit, EPSILON } from './ray.js';
 
 export const RAY_SPEED = 12;
@@ -46,7 +47,7 @@ export function stepSimulation(previous, commands, dt) {
   while (pending.length || state.pulses[0]?.time <= state.time + EPSILON || state.delayed[0]?.time <= state.time + EPSILON) {
     const scheduled = pending.map(item => {
       const distance = (dt - item.elapsed) * item.ray.speed;
-      const hit = nearestHit(state, item.ray.position, item.ray.direction, distance);
+      const hit = nearestHit(state, item.ray.position, item.ray.direction, distance, { speed: item.ray.speed, time: startTime + item.elapsed });
       return { ...item, hit, arrival: hit ? item.elapsed + hit.distance / item.ray.speed : dt };
     }).sort((a, b) => a.arrival - b.arrival || a.ray.id - b.ray.id);
     const item = scheduled[0];
@@ -89,7 +90,12 @@ export function stepSimulation(previous, commands, dt) {
     }
     const time = startTime + item.arrival;
     ray.interactions++;
-    if (hit.entity.type === 'mirror' && ray.interactions < 64) {
+    if (hit.entity.type === 'monster') {
+      const monster = hit.entity, pose = monsterPose(monster, time);
+      const rear = ray.direction.x * pose.facing > .35;
+      if (rear) Object.assign(monster, { destroyed: true, destroyedAt: time, x: pose.x, facing: pose.facing });
+      events.push({ type: rear ? 'monsterBreak' : 'monsterBlock', position: { x: pose.x, y: pose.y }, time });
+    } else if (hit.entity.type === 'mirror' && ray.interactions < 64) {
       ray.direction = reflect(ray.direction, hit.normal);
       ray.position = add(point, scale(ray.direction, EPSILON * 4));
       events.push({ type: 'bounce', position: point, time });
