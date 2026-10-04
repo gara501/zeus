@@ -12,7 +12,7 @@ export function loadLevel(level) {
     if (symbol === 'D') door = position;
     if (symbol === 'T') {
       const metadata = level.totems?.find(item => item.x === position.x && item.y === position.y);
-      totems.push({ ...position, id, type: 'totem', active: false, hits: 0,
+      totems.push({ ...position, y: position.y + (metadata?.offsetY ?? 0), size: metadata?.size ?? 1.55, id, type: 'totem', active: false, hits: 0,
         requiredHits: metadata?.hits ?? 1, group: metadata?.group ?? null, order: metadata?.order ?? 0 });
     }
     if (symbol === '~' || symbol === '=') conductors.push({ ...position, id, type: symbol === '~' ? 'water' : 'metal', chargedUntil: 0 });
@@ -29,7 +29,7 @@ export function loadLevel(level) {
     if (symbol === 'N' || symbol === 'C') {
       const metadata = level.clouds?.find(item => item.x === position.x && item.y === position.y);
       if (metadata?.period !== undefined && (!Number.isFinite(metadata.period) || metadata.period <= 0)) throw new Error('Cloud period must be positive');
-      clouds.push({ ...position, id, type: symbol === 'N' ? 'chargeCloud' : 'trapCloud',
+      clouds.push({ ...position, y: position.y + (metadata?.offsetY ?? 0), id, type: symbol === 'N' ? 'chargeCloud' : 'trapCloud',
         delay: metadata?.delay ?? 1.2, period: metadata?.period ?? null, phase: metadata?.phase ?? 0,
         direction: metadata?.direction ?? null, storedRayId: null, releaseAt: 0 });
     }

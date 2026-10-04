@@ -1,5 +1,5 @@
 import * as L from 'littlejsengine';
-import { MIRROR_SCALE } from './config.js';
+import { MIRROR_HIT_SCALE } from './config.js';
 import { levels } from './levels.js';
 import { createState, stepSimulation } from './simulation.js';
 import { earnedStars } from './scoring.js';
@@ -164,7 +164,7 @@ function gameUpdate() {
     const commands = [...mirrorCommands].map(([id, angle]) => ({ type: 'rotate', id, angle }));
     mirrorCommands.clear();
     const mouse = { x: L.mousePos.x, y: L.mousePos.y };
-    hovered = pointerOnCanvas ? state.mirrors.find(mirror => mirror.rotatable && Math.hypot(mouse.x - mirror.x, mouse.y - mirror.y) < 1.32 * MIRROR_SCALE)?.id ?? null : null;
+    hovered = pointerOnCanvas ? state.mirrors.find(mirror => mirror.rotatable && Math.hypot(mouse.x - mirror.x, mouse.y - mirror.y) < 1.32 * MIRROR_HIT_SCALE)?.id ?? null : null;
     const mousePressed = pointerOnCanvas && L.mouseWasPressed(0);
     if (mousePressed && hovered && !touchMirrorControls.matches) dragging = hovered;
     if (dragging && !L.mouseIsDown(0)) dragging = null;

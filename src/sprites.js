@@ -41,8 +41,8 @@ export function drawWaterSprite(cell, time) {
 const mirrorCenters = [[287,262],[773,262],[1250,262],[287,744],[773,744],[1250,744]];
 export function drawMirrorSprite(mirror, time) {
   const [x,y] = mirrorCenters[Math.floor(time * 5) % 6];
-  // The silver surface is 244px long; match its length to the scaled 1.44-unit
-  // collision segment. LittleJS sprite angles rotate clockwise.
+  // Shrink the decorative frame while preserving forgiving ray intersections.
+  // LittleJS sprite angles rotate clockwise.
   const size = 432 * 1.44 / 244 * MIRROR_SCALE;
   drawRegion([7, x-216, y-216, 432, 432], mirror, size, size,
     mirror.rotatable ? L.rgb(.45, .9, 1) : L.rgb(1, .82, .58), false, -mirror.angle);
@@ -50,7 +50,7 @@ export function drawMirrorSprite(mirror, time) {
 
 export function drawTotemSprite(totem, time) {
   const column = totem.active ? Math.floor(time * 6) % 6 : 0;
-  drawRegion([2, column * 362, totem.active ? 362 : 0, 362, 362], totem, 1.55, 1.55);
+  drawRegion([2, column * 362, totem.active ? 362 : 0, 362, 362], totem, totem.size ?? 1.55, totem.size ?? 1.55);
 }
 
 export function drawCrystalSprite(crystal, angle) {

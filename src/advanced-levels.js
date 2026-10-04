@@ -72,7 +72,7 @@ export function advancedLevels(board) {
       map: board([['Z', -5, -1.5], ['m', -2, -1.5], ['N', -2, .5], ['/', -2, 1.5], ['m', 3, 1.5], ['T', 3, -1.5], ['D', 6, 2.5],
         ...wall(0, [-2.5, -1.5, -.5, .5, 2.5])]),
       mirrors: [mirror(-2, -1.5, .1, true), mirror(-2, 1.5, up), mirror(3, 1.5, .1, true)],
-      clouds: [{ x: -2, y: .5, delay: .8, direction: { x: 0, y: 1 } }],
+      clouds: [{ x: -2, y: .5, offsetY: -.2, delay: .8, direction: { x: 0, y: 1 } }],
       monsters: [{ from: -1, to: 2, y: 1.5, speed: 1, phase: 3 }],
     },
     {
@@ -98,6 +98,7 @@ export function advancedLevels(board) {
       mirrors: [mirror(-4, -2.5, .1, true), mirror(-4, 1.5, .1, true), mirror(1, 1.5, down), mirror(5, 1.5, down)],
       clouds: [{ x: 1, y: -1.5, period: 4, direction: { x: 1, y: 0 } }, { x: 5, y: -1.5, period: 4, phase: 2, direction: { x: 0, y: 1 } }],
       monsters: [{ from: 1.8, to: 4.2, y: 1.5, speed: .8, phase: 0 }],
+      totems: [{ x: 1, y: 2.5, size: 1.3 }],
     },
     {
       id: 'guardian-twin-gates', name: 'Twin Gates of Stone', lesson: '34 · SPLIT AND SHATTER',
@@ -124,7 +125,7 @@ export function advancedLevels(board) {
       clouds: [{ x: 4, y: 1.5, period: 8, direction: { x: 0, y: -1 } }],
       crystals: [{ x: 4, y: -.5, period: 8, phase: up - Math.PI / 8 * (8 + 1.09995 / 12), incoming: { x: 0, y: -1 } }],
       monsters: [{ from: 3, to: 5, y: -1.5, speed: .5, phase: 0 }, { from: -2, to: 1, y: -.5, speed: .75, phase: 4 }],
-      totems: [{ x: 4, y: -2.5, group: 'unity' }, { x: -1, y: 2.5, group: 'unity' }],
+      totems: [{ x: 4, y: -2.5, offsetY: .25, size: 1.3, group: 'unity' }, { x: -1, y: 2.5, group: 'unity' }],
       groups: [{ id: 'unity', type: 'timed', window: 1.05 }],
     },
   ];

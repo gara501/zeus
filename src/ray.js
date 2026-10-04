@@ -1,5 +1,5 @@
 // Geometry has no engine dependencies. Distances are world units.
-import { MIRROR_SCALE } from './config.js';
+import { MIRROR_HIT_SCALE } from './config.js';
 import { monsterPose, movingMonsterHit } from './monsters.js';
 export const EPSILON = 1e-5;
 export const add = (a, b) => ({ x: a.x + b.x, y: a.y + b.y });
@@ -61,7 +61,7 @@ export function hitBox(origin, direction, center, halfSize, maxDistance = Infini
 
 export function mirrorEnds(mirror) {
   const tangent = { x: Math.cos(mirror.angle), y: Math.sin(mirror.angle) };
-  return [add(mirror, scale(tangent, -.72 * MIRROR_SCALE)), add(mirror, scale(tangent, .72 * MIRROR_SCALE))];
+  return [add(mirror, scale(tangent, -.72 * MIRROR_HIT_SCALE)), add(mirror, scale(tangent, .72 * MIRROR_HIT_SCALE))];
 }
 
 export function nearestHit(state, origin, direction, maxDistance = 30, motion = null) {

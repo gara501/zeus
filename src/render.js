@@ -67,7 +67,7 @@ function drawMirror(mirror, hovered, dragging, time, number) {
     L.drawText(`M${number}`, vec(offset(mirror, -.8 * MIRROR_SCALE, .9 * MIRROR_SCALE)), .22, color('#68dfff'));
     for (let i = 0; i < 16; i++) {
       const angle = i * Math.PI / 8;
-      circle(offset(mirror, Math.cos(angle) * 1.36 * MIRROR_SCALE, Math.sin(angle) * 1.36 * MIRROR_SCALE), .045, hovered || dragging ? C.light : color('#68dfff'));
+      circle(offset(mirror, Math.cos(angle) * 1.1 * MIRROR_SCALE, Math.sin(angle) * 1.1 * MIRROR_SCALE), .035, hovered || dragging ? C.light : color('#68dfff'));
     }
     if (hovered || dragging) L.drawText(`${Math.round(((mirror.angle * 180 / Math.PI) % 180 + 180) % 180)}°`, vec(offset(mirror, 0, 1.6 * MIRROR_SCALE)), .25, C.gold);
   }
