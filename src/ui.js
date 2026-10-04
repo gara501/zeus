@@ -18,7 +18,7 @@ export function createUI(actions, levels) {
     </footer>
     <div id="overlay" class="overlay" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
       <p id="dialog-label" class="eyebrow"></p>
-      <div class="dialog-portrait" role="img" aria-label="Zeus"><div class="zeus-crop"><img src="${zeusImage}" alt="" /></div></div>
+      <div class="dialog-portrait" role="img" aria-label="Zeus"><div class="zeus-crop"><img src="${zeusImage}" alt="" /></div><span class="portrait-cap" aria-hidden="true"></span></div>
       <h2 id="dialog-title"></h2><div id="stars" class="stars" hidden></div><p id="dialog-text"></p>
       <div id="option-actions" hidden><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button><button id="restart">Restart <kbd>R</kbd></button><button id="home">Home</button></div>
       <button id="dialog-button"></button>

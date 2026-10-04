@@ -4,7 +4,7 @@ import { add, scale, mirrorEnds, nearestHit, normalize, reflect } from './ray.js
 import { crystalAngle, cloudReleaseTime } from './elements.js';
 import { drawFloorSprite, drawWallSprite, drawDoorSprite, drawZeusSprite,
   drawTotemSprite, drawWoodSprite, drawMetalSprite, drawCloudSprite,
-  drawBlockSprite, drawWaterSprite, drawMirrorSprite } from './sprites.js';
+  drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite } from './sprites.js';
 
 const color = hex => new L.Color().setHex(hex);
 const C = Object.fromEntries(Object.entries(PALETTE).map(([name, hex]) => [name, color(hex)]));
@@ -146,12 +146,7 @@ function arrow(position, direction, tint, length = .9) {
 
 function drawCrystal(crystal, state) {
   const angle = crystalAngle(crystal, state.time);
-  circle(crystal, 1.15, extra.dark);
-  const points = Array.from({ length: 4 }, (_, i) => offset(crystal, Math.cos(angle + i * Math.PI / 2) * .45, Math.sin(angle + i * Math.PI / 2) * .45));
-  for (let i = 0; i < 4; i++) line(points[i], points[(i + 1) % 4], .055, color('#93e4eb'));
-  line(points[0], points[2], .08, C.light);
-  line(points[1], points[3], .025, color('#93e4eb'));
-  circle(crystal, .12, C.light);
+  drawCrystalSprite(crystal, angle);
   const incoming = normalize(crystal.incoming ?? { x: crystal.x - state.zeus.x, y: crystal.y - state.zeus.y });
   arrow(crystal, incoming, color('#93e4eb'));
   arrow(crystal, reflect(incoming, { x: -Math.sin(angle), y: Math.cos(angle) }), C.gold);

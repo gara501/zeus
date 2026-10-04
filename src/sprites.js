@@ -51,6 +51,11 @@ export function drawTotemSprite(totem, time) {
   drawRegion([2, column * 362, totem.active ? 362 : 0, 362, 362], totem, 1.55, 1.55);
 }
 
+export function drawCrystalSprite(crystal, angle) {
+  // Bronze ember disc from the supplied tileset; retain the rotating phase.
+  drawRegion([0, 635, 789, 143, 145], crystal, 1.25, 1.27, L.WHITE, false, -angle);
+}
+
 const woodBreakFrames = [
   [30, 490, 255, 250], [330, 486, 255, 254], [611, 483, 270, 267],
   [884, 458, 294, 310], [1188, 494, 280, 263], [1485, 597, 265, 162],

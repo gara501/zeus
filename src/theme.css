@@ -61,8 +61,10 @@ kbd { font: 12px var(--pixel); color: #f8ebce; background: #0a19245e; border-col
 .dialog p:not(.eyebrow) { color: #4b493e; font: 15px/1.65 var(--body); }
 .dialog button { background: transparent; border: 0; color: #fff0ce; font: 18px var(--pixel); padding: 11px 30px; }
 .dialog-portrait { position: relative; width: 96px; height: 144px; margin: 5px auto 7px; }
+.dialog-portrait::before { content: ''; position: absolute; inset: 0; background: #4b4f52; clip-path: polygon(50% 7%, 90% 17%, 90% 84%, 10% 84%, 10% 17%); }
 .dialog-portrait::after { content: ''; position: absolute; inset: 0; background: url('./sprites/ui/portrait.png') center / 100% 100%; image-rendering: pixelated; filter: sepia(.85) saturate(.8); }
-.zeus-crop { position: absolute; inset: 29px 6px 24px; overflow: hidden; background: radial-gradient(ellipse at top, #52686c, #1b2d38); }
+.portrait-cap { position: absolute; z-index: 1; left: 17%; top: 7%; width: 66%; height: 12%; background: #4b4f52; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.zeus-crop { position: absolute; inset: 29px 6px 24px; overflow: hidden; background: #4b4f52; }
 .zeus-crop img { position: absolute; width: 900%; max-width: none; left: -45%; top: -17%; }
 .stars { color: #986523; font-size: 34px; text-shadow: 0 1px #fff3d8; margin: 13px 0; }
 #title-screen { gap: 10px; }
