@@ -12,6 +12,8 @@ npm run preview
 
 The campaign has **25 sequential levels**, entirely in English. Levels 1–16 teach the mechanics; levels 17–25 combine mirror chains, clearing paths, cyclic clouds, crystals, synchronized branches, rotation during a charge, ordered targets and timed windows. The final level combines a crate, a block, three mirrors, metal, a cloud, a crystal and two timed totems.
 
+Level 24, **The Return of Thunder**, uses one continuous circuit: adjust two blue mirrors, make three entry bounces, transfer the charge between two cyclic clouds, then return through the fourth mirror and the upper bronze mirror to reach the protected totem. The clouds alternate every two seconds; the first releases at 4, 8, 12… seconds and the second at 2, 6, 10… seconds. Walls prevent direct shots and require both clouds. The ideal solution uses one bolt and five total bounces.
+
 ## Controls and progression
 
 Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate it freely. R/Z restarts the level; Esc pauses. Fixed mirrors are bronze. Mirrors use a compact scale shared by rendering, collision geometry and rotation controls.
@@ -79,6 +81,7 @@ node scripts/progression-check.cjs /path/to/playwright /path/to/browser http://1
 node scripts/music-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/sprites-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/mobile-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
+node scripts/level24-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 ```
 
 Create `artifacts/` before running these checks. The first plays all 25 levels with real controls and verifies progression, stars, pause, order/timing errors, cyclic clouds, mirror chains, rotation during a charge and the ending. The others check loading/retry, scenes, fonts, equal title buttons, narrow/short layouts, sprites, music playback, saved preferences and decoded audio levels. They also work against `npm run preview`. Reference solutions in `scripts/level-solutions.js` are not imported by the shipped game.

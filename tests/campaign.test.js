@@ -36,16 +36,32 @@ test('The return-cloud puzzle requires changing the mirror during the wait', () 
   assert.equal(success.state.shots, 1);
 });
 
-test('The short route fails early but wins when the cloud is about to discharge', () => {
-  const failed = runPlan(levels[23], [{ fire: [-4, 2.5] }, { fire: [-1, -1.5] }]);
-  assert.notEqual(failed.state.status, 'won');
-  assert.ok(failed.events.some(event => event.type === 'timeout'));
-  const success = runPlan(levels[23], [{ at: 3.1, fire: [-4, 2.5] }, { fire: [-1, -1.5] }]);
-  assert.equal(success.state.status, 'won');
+test('The cloud relay requires three entry bounces, both clouds and the return mirrors', () => {
+  const level = levels[23], plan = solutionPlans[23];
+  for (const hz of [30, 60, 120]) {
+    const success = runPlan(level, plan, hz);
+    assert.equal(success.state.status, 'won');
+    const firstCharge = success.events.findIndex(event => event.type === 'charge');
+    assert.equal(success.events.slice(0, firstCharge).filter(event => event.type === 'bounce').length, 3);
+    assert.equal(success.events.filter(event => event.type === 'bounce').length, 5);
+    assert.deepEqual(success.events.filter(event => event.type === 'discharge').map(event => event.time), [4, 6]);
+    assert.equal(success.state.shots, 1);
+  }
+  const prepared = structuredClone(level);
+  for (const mirror of prepared.mirrors.filter(mirror => mirror.rotatable)) mirror.angle = Math.PI / 4;
+  for (const component of [...prepared.mirrors, ...prepared.clouds]) {
+    const broken = structuredClone(prepared);
+    const row = Math.round(3.5 - component.y), column = component.x + 7;
+    broken.map[row] = broken.map[row].slice(0, column) + '.' + broken.map[row].slice(column + 1);
+    assert.notEqual(runPlan(broken, [{ fire: [-4, -2.5] }]).state.status, 'won', `Required component at ${component.x},${component.y}`);
+  }
+  for (const fire of [[-4, 1.5], [1, -1.5], [5, -1.5], [1, 2.5]]) {
+    assert.notEqual(runPlan(prepared, [{ fire }]).state.status, 'won', `Direct shortcut to ${fire}`);
+  }
 });
 
 test('Advanced routes tolerate small aiming and mirror errors rather than requiring exact angles', () => {
-  for (const index of [16, 17, 21, 22, 24]) for (const sign of [-1, 1]) {
+  for (const index of [16, 17, 21, 22, 23, 24]) for (const sign of [-1, 1]) {
     const plan = structuredClone(solutionPlans[index]);
     for (const action of plan) {
       if (action.rotate) for (const mirror of action.rotate) mirror[2] += sign * Math.PI / 360;

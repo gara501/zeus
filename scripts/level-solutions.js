@@ -17,7 +17,7 @@ export const solutionPlans = [
   [fire(-1, -.5)], [fire(-1, -.5)], [fire(-2, -.5)],
   [fire(-3, -1.5), { at: 1, during: true, rotate: [[-3, 1.5, (Math.PI + Math.atan2(-4, 7)) / 2]] }],
   [rotate([-2, 1.5, Math.PI / 4]), fire(-2, -1.5), rotate([-2, 1.5, (Math.PI / 2 + Math.atan2(-2, 4)) / 2]), fire(-2, -1.5), rotate([-2, 1.5, -Math.PI / 4]), fire(-2, -1.5)],
-  [fire(-4, 2.5), fire(-5, .5)],
+  [rotate([-4, -2.5, Math.PI / 4], [-4, 1.5, Math.PI / 4]), fire(-4, -2.5)],
   [rotate([1, -1.5, Math.PI / 4], [-4, -.5, -Math.PI / 4]), ...Array.from({ length: 4 }, () => fire(-3, -1.5))],
 ];
 
