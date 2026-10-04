@@ -29,4 +29,19 @@ async function startGame(page) {
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
 }
 
-module.exports = { startGame, revealStory };
+async function optionAction(page, id, touch = false) {
+  await page.waitForFunction(() => ['playing', 'paused', 'lost'].includes(document.body.dataset.mode));
+  const opened = await page.locator('body').getAttribute('data-mode') === 'playing';
+  const activate = locator => touch ? locator.tap() : locator.click();
+  if (opened) {
+    await activate(page.locator('#pause'));
+    await page.waitForFunction(() => document.body.dataset.mode === 'paused');
+  }
+  await activate(page.locator(`#${id}`));
+  if (opened && ['music', 'sound'].includes(id)) {
+    await activate(page.locator('#dialog-button'));
+    await page.waitForFunction(() => document.body.dataset.mode === 'playing');
+  }
+}
+
+module.exports = { startGame, revealStory, optionAction };

@@ -1,7 +1,7 @@
 // Visual checks for the supplied sheets, against development or built preview.
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { startGame } = require('./story-helpers.cjs');
+const { startGame, optionAction } = require('./story-helpers.cjs');
 const path = require('node:path');
 let browser;
 (async () => {
@@ -78,7 +78,7 @@ let browser;
   await page.waitForSelector('#start-button:enabled');
   await page.locator('#start-button').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
-  await page.locator('#home').click();
+  await optionAction(page, 'home');
   await page.waitForFunction(() => document.body.dataset.mode === 'title');
   await page.locator('#levels-button').click();
   await page.waitForSelector('[data-level="2"]:enabled');

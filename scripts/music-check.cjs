@@ -1,6 +1,6 @@
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { startGame } = require('./story-helpers.cjs');
+const { startGame, optionAction } = require('./story-helpers.cjs');
 let browser;
 (async () => {
   browser = await chromium.launch({ headless: true, executablePath: process.argv[3] });
@@ -12,7 +12,7 @@ let browser;
   await startGame(page);
   await page.waitForFunction(() => !document.querySelector('#music-1').paused && document.querySelector('#music-1').currentTime > .3);
   assert.equal(await page.locator('#music-2').evaluate(audio => audio.paused), true);
-  await page.locator('#music').click();
+  await optionAction(page, 'music');
   await page.waitForFunction(() => document.querySelector('#music-1').paused);
   assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('zeus-progress-v1')).muted), false);
   await page.reload();
@@ -21,9 +21,9 @@ let browser;
   await page.locator('#title-music').click();
   await startGame(page);
   await page.waitForFunction(() => document.querySelector('#music-1').volume > .035);
-  await page.locator('#sound').click();
+  await optionAction(page, 'sound');
   assert.equal(await page.locator('#music-1').evaluate(audio => audio.paused), false);
-  await page.locator('#sound').click();
+  await optionAction(page, 'sound');
   await page.mouse.move(700, 500);
   await page.keyboard.press('Space');
   await page.waitForFunction(() => document.querySelector('#music-1').volume < .015);
@@ -41,7 +41,7 @@ let browser;
     await page.waitForFunction(track => !document.querySelector(`#music-${track}`).paused && document.querySelector(`#music-${track}`).currentTime > .1, track);
     assert.equal(await page.locator(`#music-${3 - track}`).evaluate(audio => audio.paused), true);
     assert.equal(await page.locator(`#music-${track}`).evaluate(audio => audio.loop && audio.volume <= .04), true);
-    await page.locator('#home').click();
+    await optionAction(page, 'home');
     await page.waitForFunction(() => document.body.dataset.mode === 'title');
     assert.equal(await page.locator('audio').evaluateAll(players => players.every(audio => audio.paused)), true);
   }

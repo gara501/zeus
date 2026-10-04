@@ -1,6 +1,6 @@
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { revealStory } = require('./story-helpers.cjs');
+const { revealStory, optionAction } = require('./story-helpers.cjs');
 const path = require('node:path');
 let browser;
 (async () => {
@@ -54,7 +54,7 @@ let browser;
   await page.locator('#start-button').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
   await page.setViewportSize({ width: 1280, height: 800 });
-    await page.locator('#home').click();
+    await optionAction(page, 'home');
     await page.waitForFunction(() => document.body.dataset.mode === 'title');
     await page.locator('#levels-button').click();
     await page.locator('[data-level="4"]').click();

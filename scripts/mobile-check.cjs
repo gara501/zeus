@@ -1,6 +1,6 @@
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { revealStory } = require('./story-helpers.cjs');
+const { revealStory, optionAction } = require('./story-helpers.cjs');
 let browser;
 (async () => {
   browser = await chromium.launch({ headless: true, executablePath: process.argv[3] });
@@ -47,7 +47,7 @@ let browser;
     await page.locator(`[data-level="${index}"]`).tap();
     await page.waitForSelector('body[data-mode="playing"]');
   };
-  const home = async () => { await page.locator('#home').tap(); await page.waitForSelector('body[data-mode="title"]'); };
+  const home = async () => { await optionAction(page, 'home', true); await page.waitForSelector('body[data-mode="title"]'); };
   await select(2);
   assert.equal(await page.locator('#mirror-controls input').count(), 1);
   const slider = page.locator('#mirror-0');
@@ -82,7 +82,7 @@ let browser;
   await page.locator('#mirror-1').evaluate(input => { input.value = '90'; input.dispatchEvent(new Event('input', { bubbles: true })); });
   await page.waitForFunction(() => document.querySelectorAll('.mirror-lever output')[1].textContent === '90.0°');
   const untouched = await page.locator('#mirror-0').inputValue();
-  await page.locator('#restart').tap();
+  await optionAction(page, 'restart', true);
   await page.waitForFunction(() => document.querySelectorAll('.mirror-lever output')[1].textContent !== '90.0°');
   assert.equal(await page.locator('#mirror-0').inputValue(), untouched, 'M2 controls only its assigned mirror');
   await page.setViewportSize({ width: 844, height: 500 });

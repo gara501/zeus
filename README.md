@@ -24,6 +24,8 @@ The header shows only the current level. After the first victory, **Levels** app
 
 The title buttons share the same dimensions, font and font size.
 
+**Options** in the top bar opens a modal and pauses the game. Home, Restart, Effects and Music are grouped there to keep the footer clear for guidance and mobile mirror sliders. Continue or Esc closes the modal and resumes play. Keyboard focus stays inside the modal while it is open.
+
 ## Mechanics
 
 - **Wooden crate:** consumes one bolt, burns and permanently opens the path. Burning is a visual effect; it neither stores nor returns the branch. Another shot becomes available after the impact.

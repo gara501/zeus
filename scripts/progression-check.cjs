@@ -1,6 +1,6 @@
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { startGame } = require('./story-helpers.cjs');
+const { startGame, optionAction } = require('./story-helpers.cjs');
 let browser;
 (async () => {
   browser = await chromium.launch({ headless: true, executablePath: process.argv[3] });
@@ -22,7 +22,7 @@ let browser;
   await page.waitForTimeout(100);
   await page.keyboard.press('Space');
   await page.waitForFunction(() => document.querySelector('#current-level').textContent === '02' && document.body.dataset.mode === 'playing');
-  await page.locator('#home').click();
+  await optionAction(page, 'home');
   await page.waitForFunction(() => document.body.dataset.mode === 'title');
   assert.equal(await page.locator('#start-button').textContent(), 'Continue');
   await page.locator('#levels-button').click();

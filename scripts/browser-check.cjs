@@ -1,7 +1,7 @@
 // Run with a Playwright installation and Chrome/Edge executable as arguments.
 const { chromium } = require(process.argv[2] || 'playwright');
 const assert = require('node:assert/strict');
-const { startGame, revealStory } = require('./story-helpers.cjs');
+const { startGame, revealStory, optionAction } = require('./story-helpers.cjs');
 const path = require('node:path');
 
 let browser, page;
@@ -277,13 +277,13 @@ let browser, page;
   assert.equal(save.stars.turn, 3);
   await page.locator('#start-button').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
-  await page.locator('#home').click();
+  await optionAction(page, 'home');
   await page.waitForFunction(() => document.body.dataset.mode === 'title');
   await page.locator('#levels-button').click();
   await page.locator('[data-level="2"]').click();
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
   await shootAt(5, -2.5);
-  await page.locator('#restart').click();
+  await optionAction(page, 'restart');
   await page.waitForFunction(() => document.querySelector('#ammo').textContent === '3');
   assert.equal(await text('#ammo'), '3');
   assert.equal(await text('#clock'), '00:00');

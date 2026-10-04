@@ -9,17 +9,19 @@ export function createUI(actions, levels) {
       <div class="brand"><span class="brand-mark" aria-hidden="true">ϟ</span><div><h1>ZEUS</h1><p>THE PATH OF THUNDER</p></div></div>
       <div class="current-level" aria-label="Current level"><span>LEVEL</span><strong id="current-level">01</strong></div>
       <div class="stats"><div class="ammo-stat"><span><i class="stat-icon lightning-icon" aria-hidden="true"></i>BOLTS</span><strong id="ammo" class="sr-only">3</strong><div id="ammo-pips" aria-label="3 bolts remaining"></div></div><div><span><i class="stat-icon totem-icon" aria-hidden="true"></i>TOTEMS</span><strong id="objectives">0/1</strong></div><div><span><i class="stat-icon clock-icon" aria-hidden="true"></i>TIME</span><strong id="clock">00:00</strong></div></div>
+      <button id="pause" aria-haspopup="dialog" aria-controls="overlay">Options</button>
     </header>
     <section class="lesson-info"><p id="lesson-label"></p><h2 id="level-name"></h2><div id="objective-status"></div></section>
     <footer class="bottom-panel">
       <section id="mirror-controls" aria-label="Mirror rotation controls" hidden></section>
       <div class="guidance"><p id="hint"></p><span id="mentor"></span><div id="shot-state"></div></div>
-      <div class="controls"><span><kbd>CLICK</kbd> / <kbd>SPACE</kbd> Fire</span><div><button id="home">Home</button><button id="restart">Restart <kbd>R</kbd></button><button id="pause">Pause <kbd>ESC</kbd></button><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button></div></div>
     </footer>
     <div id="overlay" class="overlay" hidden><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
       <p id="dialog-label" class="eyebrow"></p>
       <div class="dialog-portrait" role="img" aria-label="Zeus"><div class="zeus-crop"><img src="${zeusImage}" alt="" /></div></div>
-      <h2 id="dialog-title"></h2><div id="stars" class="stars" hidden></div><p id="dialog-text"></p><button id="dialog-button"></button>
+      <h2 id="dialog-title"></h2><div id="stars" class="stars" hidden></div><p id="dialog-text"></p>
+      <div id="option-actions" hidden><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button><button id="restart">Restart <kbd>R</kbd></button><button id="home">Home</button></div>
+      <button id="dialog-button"></button>
     </section></div>
     <div id="fade" aria-hidden="true"></div>`;
   document.body.append(root);
@@ -38,8 +40,15 @@ export function createUI(actions, levels) {
   }
   // UI gestures must not also enter the game input stream.
   root.addEventListener('mousedown', event => event.stopPropagation());
-  root.addEventListener('click', event => event.target.closest('button')?.blur());
+  root.addEventListener('click', event => { if (!event.target.closest('.dialog')) event.target.closest('button')?.blur(); });
   root.addEventListener('keydown', event => {
+    if (event.code === 'Tab' && !element('overlay').hidden) {
+      const buttons = [...element('overlay').querySelectorAll('button:not(:disabled)')].filter(button => !button.hidden && !button.closest('[hidden]'));
+      const first = buttons[0], last = buttons.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      event.stopPropagation();
+    }
     if (event.code === 'Space' || event.code === 'Enter') event.stopPropagation();
   });
   let lastDialog = '';
@@ -95,16 +104,21 @@ export function createUI(actions, levels) {
       element('current-level').textContent = String(index + 1).padStart(2, '0');
       element('home').disabled = !['playing', 'paused', 'lost'].includes(mode);
       const dialog = {
-        paused: ['TAKE A BREATH', 'Thunder Can Wait', 'Everything is paused. Your bolts and the clock are resting, too.', 'Continue'],
+        paused: ['TAKE A BREATH', 'Options', 'The game is paused while you adjust your options.', 'Continue'],
         lost: ['TRY AGAIN', 'There Is More to Learn', 'Out of bolts. Try another angle; restarting restores every charge.', 'Retry'],
         victory: ['LESSON COMPLETED', 'Victory!', `${state.shots} ${state.shots === 1 ? 'bolt' : 'bolts'} · ${state.time.toFixed(1)} s`, ''],
       }[mode];
       element('overlay').hidden = !dialog;
+      element('option-actions').hidden = !['paused', 'lost'].includes(mode);
+      root.querySelector('.dialog-portrait').hidden = mode === 'paused';
+      root.querySelector('.dialog').classList.toggle('options-dialog', mode === 'paused');
+      for (const selector of ['.topbar', '.lesson-info', '.bottom-panel']) root.querySelector(selector).inert = Boolean(dialog);
       element('fade').style.opacity = fade;
       element('fade').style.pointerEvents = fade > 0 ? 'auto' : 'none';
       element('restart').disabled = ['victory', 'fadeOut', 'fadeIn', 'story'].includes(mode);
       element('pause').disabled = !['playing', 'paused'].includes(mode);
-      element('pause').textContent = mode === 'paused' ? 'Continue · Esc' : 'Pause · Esc';
+      element('pause').textContent = 'Options';
+      element('pause').setAttribute('aria-expanded', String(mode === 'paused'));
       if (dialog) {
         element('dialog-label').textContent = dialog[0];
         element('dialog-title').textContent = dialog[1];
@@ -114,7 +128,8 @@ export function createUI(actions, levels) {
         element('stars').hidden = mode !== 'victory';
         element('stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
         if (lastDialog !== mode && dialog[3]) element('dialog-button').focus({ preventScroll: true });
-      } else if (lastDialog && document.activeElement instanceof HTMLButtonElement) document.activeElement.blur();
+      } else if (lastDialog === 'paused' && mode === 'playing') element('pause').focus({ preventScroll: true });
+      else if (lastDialog && document.activeElement instanceof HTMLButtonElement) document.activeElement.blur();
       lastDialog = dialog ? mode : '';
     },
   };

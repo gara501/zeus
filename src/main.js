@@ -39,7 +39,11 @@ let pointerScreen = { x: 0, y: 0 };
 document.addEventListener('mousemove', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 document.addEventListener('mousedown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 document.addEventListener('pointerdown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
-document.addEventListener('pointermove', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
+document.addEventListener('pointermove', event => {
+  pointerScreen = { x: event.clientX, y: event.clientY };
+  // Aiming at the board returns Space to firing after keyboard focus was restored.
+  if (event.target instanceof HTMLCanvasElement && document.activeElement?.id === 'pause') document.activeElement.blur();
+});
 
 function load(indexToLoad) {
   mirrorCommands.clear();
