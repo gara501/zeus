@@ -13,8 +13,15 @@ export const spriteUrls = [
   new URL('./sprites/water.png', import.meta.url).href,
   new URL('./sprites/mirror.png', import.meta.url).href,
   new URL('./sprites/monster.png', import.meta.url).href,
+  new URL('./sprites/pararayos.png', import.meta.url).href,
 ];
 const tiles = new Map();
+export function drawRodSprite(rod, time) {
+  const frame = rod.chargedUntil > time ? 1 + Math.floor(time * 10) % 4 : 0;
+  // Six supplied frames, three columns by two rows, with transparent glow.
+  drawRegion([9, (frame % 3) * 512, Math.floor(frame / 3) * 512, 512, 512],
+    { x: rod.x, y: rod.y - .46 }, 1.1, 1.1);
+}
 function region(texture, x, y, width, height) {
   const key = [texture, x, y, width, height].join(':');
   if (!tiles.has(key)) tiles.set(key, new L.TileInfo(L.vec2(x, y), L.vec2(width, height), L.textureInfos[texture], 0, .5));

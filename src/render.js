@@ -5,7 +5,7 @@ import { crystalAngle, cloudReleaseTime } from './elements.js';
 import { monsterPose } from './monsters.js';
 import { drawFloorSprite, drawWallSprite, drawDoorSprite, drawZeusSprite,
   drawTotemSprite, drawWoodSprite, drawMetalSprite, drawCloudSprite,
-  drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite, drawMonsterSprite } from './sprites.js';
+  drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite, drawMonsterSprite, drawRodSprite } from './sprites.js';
 
 const color = hex => new L.Color().setHex(hex);
 const C = Object.fromEntries(Object.entries(PALETTE).map(([name, hex]) => [name, color(hex)]));
@@ -195,6 +195,12 @@ export function drawGame(state, aim, hovered, dragging, particles, mode, visual)
   for (const item of state.breakables) drawBreakable(item, state.time);
   for (const crystal of state.crystals) drawCrystal(crystal, state);
   for (const cloud of state.clouds) drawCloud(cloud, state);
+  for (const rod of state.rods) {
+    L.drawCircle(vec(rod), rod.radius * 2, L.rgb(0, 0, 0, 0), .015, L.rgb(.3, .8, 1, .35));
+    drawRodSprite(rod, state.time);
+    arrow(rod, normalize(rod.direction), color('#68dfff'));
+    L.drawText('ATTRACTS', vec(offset(rod, 0, -1.15)), .14, color('#68dfff'));
+  }
   const door = state.door;
   drawDoorSprite(door, state.status === 'won');
   let mirrorNumber = 0;
@@ -217,6 +223,14 @@ export function drawGame(state, aim, hovered, dragging, particles, mode, visual)
       line(from, to, .019, C.muted);
     }
     if (hit) L.drawCircle(vec(add(state.zeus, scale(aim, hit.distance))), .18, L.rgb(0, 0, 0, 0), .02, C.gold);
+    if (hit?.entity.type === 'lightningRod') {
+      const entry = add(state.zeus, scale(aim, hit.distance));
+      line(entry, hit.entity, .019, color('#68dfff'));
+      const direction = normalize(hit.entity.direction);
+      const start = add(hit.entity, scale(direction, .18005));
+      const next = nearestHit(state, start, direction, 20, null, { rodVisits: [hit.entity.id] });
+      line(start, add(start, scale(direction, next?.distance ?? 2)), .019, color('#68dfff'));
+    }
   }
   drawZeus(state.zeus, aim, state.time, visual, state.status);
   for (const segment of state.trails) drawLightning(segment, state.time);

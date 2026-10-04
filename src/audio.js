@@ -11,6 +11,8 @@ const sounds = {
   charge: new Sound([.16, .02, 180, .03, .12, .3, 0, 1, 5]),
   discharge: new Sound([.2, .01, 360, .005, .06, .18, 4, 1, 8]),
   absorb: new Sound([.12, .03, 70, .01, .03, .12, 4, 1, -5]),
+  attract: new Sound([.13, .01, 300, .02, .08, .15, 0, 1, 7]),
+  redirect: new Sound([.17, .01, 700, .005, .04, .16, 1, 1, 5]),
   monsterBlock: new Sound([.18, .02, 65, .005, .06, .18, 4, 1, -4]),
   monsterBreak: new Sound([.22, .04, 85, .01, .12, .35, 4, 1, -7]),
   wall: new Sound([.1, .04, 90, .005, .01, .09, 4]),

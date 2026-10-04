@@ -17,7 +17,7 @@ test('The bronze maze needs its three bounces and the final shot crosses all sys
   const maze = runPlan(levels[16], solutionPlans[16]);
   assert.equal(maze.events.filter(event => event.type === 'bounce').length, 3);
   const final = runPlan(levels[24], solutionPlans[24]);
-  for (const type of ['burn', 'crack', 'break', 'metal', 'charge', 'discharge', 'split', 'bounce', 'victory']) {
+  for (const type of ['burn', 'attract', 'redirect', 'metal', 'charge', 'discharge', 'split', 'bounce', 'victory']) {
     assert.ok(final.events.some(event => event.type === type), `Missing final mechanic: ${type}`);
   }
 });

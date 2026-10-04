@@ -64,7 +64,7 @@ export function mirrorEnds(mirror) {
   return [add(mirror, scale(tangent, -.72 * MIRROR_HIT_SCALE)), add(mirror, scale(tangent, .72 * MIRROR_HIT_SCALE))];
 }
 
-export function nearestHit(state, origin, direction, maxDistance = 30, motion = null) {
+export function nearestHit(state, origin, direction, maxDistance = 30, motion = null, ray = null) {
   let nearest = null;
   for (const entity of [...state.walls, ...state.mirrors, ...state.totems, ...(state.conductors || []), ...(state.breakables || []).filter(item => !item.destroyed), ...(state.crystals || []), ...(state.clouds || [])]) {
     let hit;
@@ -81,6 +81,21 @@ export function nearestHit(state, origin, direction, maxDistance = 30, motion = 
     const hit = motion ? movingMonsterHit(monster, origin, direction, motion.speed, motion.time, maxDistance / motion.speed)
       : hitCircle(origin, direction, monsterPose(monster, state.time), monster.radius, maxDistance);
     if (hit && (!nearest || hit.distance < nearest.distance - EPSILON)) nearest = { ...hit, entity: monster };
+  }
+  for (const rod of state.rods ?? []) {
+    if (ray?.rodVisits?.includes(rod.id) || (ray?.rodTarget && ray.rodTarget !== rod.id)) continue;
+    const arriving = ray?.rodTarget === rod.id;
+    const inside = Math.hypot(origin.x - rod.x, origin.y - rod.y) <= rod.radius;
+    const hit = arriving ? hitCircle(origin, direction, rod, .12, maxDistance)
+      : inside ? { distance: 0 } : hitCircle(origin, direction, rod, rod.radius, maxDistance);
+    if (!hit || (nearest && hit.distance >= nearest.distance - EPSILON)) continue;
+    const entry = add(origin, scale(direction, hit.distance));
+    const distance = Math.hypot(rod.x - entry.x, rod.y - entry.y);
+    const inward = normalize(subtract(rod, entry));
+    // The field cannot pull a bolt through masonry or an unopened crate.
+    if (!arriving && [...state.walls, ...(state.breakables ?? []).filter(item => !item.destroyed)]
+      .some(wall => hitBox(entry, inward, wall, .5, distance))) continue;
+    nearest = { ...hit, entity: rod, capture: !arriving };
   }
   return nearest;
 }

@@ -6,7 +6,7 @@ const goatImage = new URL('./sprites/amaltea.png', import.meta.url).href;
 export const intro = {
   image: new URL('./sprites/transitions/intro.png', import.meta.url).href,
   label: 'THE JOURNEY BEGINS', title: 'The Destiny of a Spark', button: 'Begin the Journey',
-  text: 'I am Amalthea. I watched Zeus grow when thunder was only a spark in his hands. Now he must prepare to face his future. Guide his lightning to light every totem: mirrors, water and metal will show the way. Every bolt counts. Help him learn, and one day he will be ready to challenge the Titans.',
+  text: 'I am Amalthea. I watched Zeus grow when thunder was only a spark in his hands. Now he must prepare to face his future. Guide his lightning to light every totem: mirrors, lightning rods, water and metal will show the way. Every bolt counts. Help him learn, and one day he will be ready to challenge the Titans.',
 };
 export const training = {
   image: new URL('./sprites/transitions/ready.png', import.meta.url).href,

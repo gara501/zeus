@@ -10,7 +10,7 @@ let browser;
   const errors = [], sheets = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => {
-    if (/\/(zeus|tileset|totem|madera|metal|nubes|water|mirror|monster).*\.png/.test(response.url())) {
+    if (/\/(zeus|tileset|totem|madera|metal|nubes|water|mirror|monster|pararayos).*\.png/.test(response.url())) {
       if (![200, 304].includes(response.status())) errors.push(`Sheet HTTP ${response.status()}: ${response.url()}`);
       sheets.push(response.url());
     }
@@ -23,7 +23,7 @@ let browser;
   await page.waitForFunction(() => document.body.dataset.mode === 'playing');
   await page.waitForSelector('#level-name');
   await page.waitForTimeout(500);
-  assert.equal(new Set(sheets).size, 9, 'All nine game sheets must load in the build');
+  assert.equal(new Set(sheets).size, 10, 'All ten game sheets must load in the build');
   const aim = async (x, y) => {
     const point = await page.evaluate(({ x, y }) => {
       const box = document.querySelector('#game canvas').getBoundingClientRect();

@@ -90,8 +90,8 @@ let browser, page;
     ['The Metal Path', -1, -1.5, 'metal'],
     ['Where Paths Meet', -1, -.5, 'metal-fork'],
     ['The Patience of Fire', 0, -.5, 'wood', 2, 3],
-    ['Opening a Breach', 0, -.5, 'fragile', 3, 3],
-    ['The Path You Leave', -1, -.5, 'clear-path', 4, 5],
+    ['The Pull of Thunder', 0, -.5, 'rod', 1],
+    ['The Path You Leave', -1, -.5, 'clear-path', 2],
     ['The Crystal Moment', 0, -.5, 'crystal', 1, 4],
     ['The Thunder That Waits', 0, -.5, 'charge-cloud', 1, 3],
     ['Choosing the Sky', -2, 1.5, 'cloud-trap'],
@@ -256,9 +256,9 @@ let browser, page;
   await shootAt(-4, -2.5); await waitVictory();
   await waitLesson('The Threshold of the Titan');
   await page.keyboard.press('KeyR');
-  await rotateMirror(1, -1.5, Math.PI / 4);
+  await rotateMirror(1, -1.5, (Math.PI / 2 - Math.atan2(1, 2)) / 2);
   await rotateMirror(-4, -.5, -Math.PI / 4);
-  for (let i = 0; i < 3; i++) { await shootAt(-3, -1.5); await waitReady(); }
+  await shootAt(-3, -1.5); await waitReady();
   await snapshot('final-prepared');
   const seconds = () => page.evaluate(() => {
     const [minutes, seconds] = document.querySelector('#clock').textContent.split(':').map(Number);
@@ -269,7 +269,7 @@ let browser, page;
     return (minutes * 60 + seconds) % 6 === 0;
   });
   await shootAt(-3, -1.5); await waitVictory();
-  assert.equal(await text('#ammo'), '3');
+  assert.equal(await text('#ammo'), '2');
   console.log('Ordered rebounds, alternative timed routes and final combination passed');
   await page.waitForSelector('body[data-mode="story"]');
   assert.equal(await text('#narrator-name'), 'EAGLE');

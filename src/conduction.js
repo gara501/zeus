@@ -41,7 +41,7 @@ export function schedulePulse(state, entry, ray, time, point) {
   for (let i = 0; i < queue.length; i++) {
     const current = queue[i];
     state.pulses.push({ nodeId: current.cell.id, from: current.from, start: current.start, time: current.time,
-      shotId: ray.shotId ?? ray.id, networks: [...(ray.networks || []), entry.network], interactions: ray.interactions,
+      shotId: ray.shotId ?? ray.id, networks: [...(ray.networks || []), entry.network], rodVisits: ray.rodVisits ?? [], interactions: ray.interactions,
       entryId: entry.id, incoming: ray.direction });
     for (const id of current.cell.neighbors) {
       if (visited.has(id)) continue;

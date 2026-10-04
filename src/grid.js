@@ -2,7 +2,7 @@ import { connectConductors } from './conduction.js';
 
 export function loadLevel(level) {
   if (level.map.length !== 8 || level.map.some(row => row.length !== 15)) throw new Error('El tablero debe medir 15 × 8');
-  const walls = [], totems = [], mirrors = [], conductors = [], breakables = [], crystals = [], clouds = [];
+  const walls = [], totems = [], mirrors = [], conductors = [], breakables = [], crystals = [], clouds = [], rods = [];
   let zeus, door;
   level.map.forEach((row, y) => [...row].forEach((symbol, x) => {
     const position = { x: x - 7, y: 3.5 - y };
@@ -26,6 +26,12 @@ export function loadLevel(level) {
       const metadata = level.crystals?.find(item => item.x === position.x && item.y === position.y);
       crystals.push({ ...position, id, type: 'crystal', phase: metadata?.phase ?? 0, period: metadata?.period ?? 8, incoming: metadata?.incoming ?? null });
     }
+    if (symbol === 'A') {
+      const metadata = level.rods?.find(item => item.x === position.x && item.y === position.y);
+      const radius = metadata?.radius ?? 1.2, direction = metadata?.direction ?? { x: 1, y: 0 };
+      if (!Number.isFinite(radius) || radius <= .18 || !Number.isFinite(metadata?.offsetY ?? 0) || !Number.isFinite(direction.x) || !Number.isFinite(direction.y) || Math.hypot(direction.x, direction.y) === 0) throw new Error('Invalid lightning rod');
+      rods.push({ ...position, y: position.y + (metadata?.offsetY ?? 0), id, type: 'lightningRod', radius, direction, chargedUntil: 0 });
+    }
     if (symbol === 'N' || symbol === 'C') {
       const metadata = level.clouds?.find(item => item.x === position.x && item.y === position.y);
       if (metadata?.period !== undefined && (!Number.isFinite(metadata.period) || metadata.period <= 0)) throw new Error('Cloud period must be positive');
@@ -47,5 +53,5 @@ export function loadLevel(level) {
     return { ...monster, id: `monster-${index}`, type: 'monster', phase: monster.phase ?? 0,
       radius: .42, destroyed: false, destroyedAt: null, facing: 1, x: monster.from };
   });
-  return { zeus, door, walls, mirrors, totems, groups, breakables, crystals, clouds, monsters, conductors: connectConductors(conductors, walls, level.metalPorts) };
+  return { zeus, door, walls, mirrors, totems, groups, breakables, crystals, clouds, rods, monsters, conductors: connectConductors(conductors, walls, level.metalPorts) };
 }

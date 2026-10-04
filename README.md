@@ -10,7 +10,7 @@ npm run build
 npm run preview
 ```
 
-The campaign has **35 sequential levels**, entirely in English. Levels 1–16 teach the mechanics; levels 17–25 combine the original systems. The eagle leads levels 26–30 through longer mirror chains, synchronized clouds, ordered releases and tighter timing. Levels 31–35 add patrolling stone guardians. The final trial combines opening a breach, conductors, cloud cycles, crystal branches, two guardians and a 1.05-second totem window. Existing progress remains valid, unlocking level 26 after level 25.
+The campaign has **35 sequential levels**, entirely in English. Levels 1–16 teach the mechanics; levels 17–25 combine the original systems. The eagle leads levels 26–30 through longer mirror chains, synchronized clouds, ordered releases and tighter timing. Levels 31–35 add patrolling stone guardians. The final trial combines burning a crate, rod attraction, conductors, cloud cycles, crystal branches, two guardians and a 1.05-second totem window. Existing progress remains valid, unlocking level 26 after level 25.
 
 Level 24, **The Return of Thunder**, uses one continuous circuit: adjust two blue mirrors, make three entry bounces, transfer the charge between two cyclic clouds, then return through the fourth mirror and the upper bronze mirror to reach the protected totem. The clouds alternate every two seconds; the first releases at 4, 8, 12… seconds and the second at 2, 6, 10… seconds. Walls prevent direct shots and require both clouds. The ideal solution uses one bolt and five total bounces.
 
@@ -33,7 +33,7 @@ The title buttons share the same dimensions, font and font size.
 ## Mechanics
 
 - **Wooden crate:** consumes one bolt, burns and permanently opens the path. Burning is a visual effect; it neither stores nor returns the branch. Another shot becomes available after the impact.
-- **Fragile block:** requires two impacts to break, consuming both branches. The next bolt passes through the breach. Configure resistance with `breakables[].hits`; accumulated damage is visible.
+- **Lightning rod:** replaces the fragile block in campaign levels 9, 10, 25, 28, 30 and 35. A visible blue field captures nearby bolts, pulls them toward the tip at normal ray speed, then redirects them along the arrow without consuming them. Walls and unopened crates block attraction. Each branch can visit a rod once; visited rods survive crystal splitting and conduction, preventing recapture loops. Later shots can reuse every rod. Configure `rods[].radius`, `direction` and optional `offsetY`. Level 9 teaches a near miss; level 10 combines crate removal with attraction. Advanced rods pull the bolt upward and send it diagonally into a blue mirror, requiring a new mirror angle before the conductor and cloud routes. The six animation frames come from `src/sprites/pararayos.png`.
 - **Storage cloud:** stores a branch and releases it in its configured direction after `delay`. It can be charged again.
 - **Cyclic cloud:** uses `clouds[].period` and `phase` on the level clock. It releases at the next cycle boundary, even just after receiving a charge. An impact exactly at the boundary is accepted. Empty clouds display their clock without generating lightning. A full cloud absorbs additional impacts without replacing its stored charge. A ring and countdown identify this variant.
 - **Trap cloud:** absorbs the incoming branch.
@@ -72,9 +72,11 @@ Original tileset, Zeus, totem, wood, metal, cloud, water and mirror sheets remai
 
 ## Verification
 
+`scripts/rods-check.cjs` plays the two rod tutorials and the diagonal advanced route using mouse controls and mobile sliders/taps.
+
 `scripts/unlimited-check.cjs` verifies repeated misses, victory, one-star and three-star scoring, restart and saved progress on desktop and touch.
 
-`npm test` runs **63 tests** for geometry, simulation, cycles, campaign, monsters and subtitle pagination. All 35 solutions are checked at 30, 60 and 120 Hz with sequential shots, unlimited attempts and efficiency targets. Coverage includes timing failures, moving collisions, front/back impacts, rotation during a charge, aiming and mirror tolerances, firing windows, block damage, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
+`npm test` runs **70 tests** for geometry, simulation, cycles, campaign, monsters and subtitle pagination. All 35 solutions are checked at 30, 60 and 120 Hz with sequential shots, unlimited attempts and efficiency targets. Coverage includes timing failures, moving collisions, front/back impacts, rotation during a charge, aiming and mirror tolerances, firing windows, rod capture/occlusion, loop prevention, crate consumption, releases, timed windows, cycles, restart and recirculation protection.
 
 Browser checks require an external Playwright installation and Chrome/Edge:
 

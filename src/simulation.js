@@ -48,7 +48,7 @@ export function stepSimulation(previous, commands, dt) {
   while (pending.length || state.pulses[0]?.time <= state.time + EPSILON || state.delayed[0]?.time <= state.time + EPSILON) {
     const scheduled = pending.map(item => {
       const distance = (dt - item.elapsed) * item.ray.speed;
-      const hit = nearestHit(state, item.ray.position, item.ray.direction, distance, { speed: item.ray.speed, time: startTime + item.elapsed });
+      const hit = nearestHit(state, item.ray.position, item.ray.direction, distance, { speed: item.ray.speed, time: startTime + item.elapsed }, item.ray);
       return { ...item, hit, arrival: hit ? item.elapsed + hit.distance / item.ray.speed : dt };
     }).sort((a, b) => a.arrival - b.arrival || a.ray.id - b.ray.id);
     const item = scheduled[0];
@@ -73,7 +73,7 @@ export function stepSimulation(previous, commands, dt) {
       for (const branch of branches) {
         if ((state.branchCounts[pulse.shotId] || 0) >= MAX_BRANCHES) break;
         state.branchCounts[pulse.shotId] = (state.branchCounts[pulse.shotId] || 0) + 1;
-        pending.push({ ray: { ...branch, id: state.nextId++, shotId: pulse.shotId, networks: pulse.networks,
+        pending.push({ ray: { ...branch, id: state.nextId++, shotId: pulse.shotId, networks: pulse.networks, rodVisits: pulse.rodVisits,
           age: 0, speed: RAY_SPEED, interactions: pulse.interactions }, elapsed: Math.max(0, Math.min(dt, pulse.time - startTime)) });
       }
       continue;
@@ -91,7 +91,23 @@ export function stepSimulation(previous, commands, dt) {
     }
     const time = startTime + item.arrival;
     ray.interactions++;
-    if (hit.entity.type === 'monster') {
+    if (hit.entity.type === 'lightningRod' && ray.interactions < 64) {
+      const rod = hit.entity;
+      rod.chargedUntil = time + .45;
+      if (hit.capture && Math.hypot(point.x - rod.x, point.y - rod.y) > .12) {
+        ray.rodTarget = rod.id;
+        ray.direction = normalize({ x: rod.x - point.x, y: rod.y - point.y });
+        events.push({ type: 'attract', position: point, time });
+      } else {
+        state.trails.push({ from: point, to: { x: rod.x, y: rod.y }, time, seed: ray.id });
+        ray.rodVisits = [...(ray.rodVisits ?? []), rod.id];
+        ray.rodTarget = null;
+        ray.direction = normalize(rod.direction);
+        ray.position = add(rod, scale(ray.direction, .18005));
+        events.push({ type: 'redirect', position: { x: rod.x, y: rod.y }, time });
+      }
+      pending.push({ ray, elapsed: item.arrival });
+    } else if (hit.entity.type === 'monster') {
       const monster = hit.entity, pose = monsterPose(monster, time);
       const rear = ray.direction.x * pose.facing > .35;
       if (rear) Object.assign(monster, { destroyed: true, destroyedAt: time, x: pose.x, facing: pose.facing });
