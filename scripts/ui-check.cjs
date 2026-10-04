@@ -93,6 +93,43 @@ let browser;
     await page.waitForFunction(() => document.body.dataset.mode === 'playing');
     assert.equal(await page.locator('#pause').evaluate(button => button === document.activeElement), true, 'Closing options restores focus');
   }
+  const checkDialog = async () => {
+    await page.waitForSelector('#option-actions:not([hidden])');
+    assert.equal(await page.locator('#option-actions button:visible').count(), 4);
+    const layout = await page.locator('.dialog').evaluate(dialog => {
+      const box = dialog.getBoundingClientRect();
+      const buttons = [...dialog.querySelectorAll('button')].filter(button => button.checkVisibility());
+      return { fits: box.top >= 0 && box.bottom <= innerHeight && box.left >= 0 && box.right <= innerWidth,
+        noScroll: dialog.scrollHeight <= dialog.clientHeight && dialog.scrollWidth <= dialog.clientWidth,
+        actionsVisible: buttons.every(button => { const b = button.getBoundingClientRect(); return b.top >= box.top && b.bottom <= box.bottom && b.left >= box.left && b.right <= box.right; }) };
+    });
+    assert.deepEqual(layout, { fits: true, noScroll: true, actionsVisible: true }, 'The modal and every action must fit without scroll or clipping');
+  };
+  await page.locator('#pause').click();
+  await page.waitForSelector('body[data-mode="paused"]');
+  for (const [width, height] of [[390, 740], [320, 568], [568, 320], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await checkDialog();
+  }
+  await page.screenshot({ path: path.resolve('artifacts/options-compact-landscape.png') });
+  await optionAction(page, 'home');
+  await page.waitForSelector('body[data-mode="title"]');
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.locator('#levels-button').click();
+  await page.locator('[data-level="0"]').click();
+  await page.waitForSelector('body[data-mode="playing"]');
+  await page.mouse.move(640, 200);
+  for (let shot = 0; shot < 3; shot++) {
+    await page.keyboard.press('Space');
+    await page.waitForFunction(count => Number(document.querySelector('#ammo').textContent) === count, 2 - shot);
+    if (shot < 2) await page.waitForFunction(() => document.querySelector('#shot-state').textContent === 'Ready to fire');
+  }
+  await page.waitForSelector('body[data-mode="lost"]');
+  for (const [width, height] of [[1280, 800], [390, 740], [320, 568], [568, 320], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await checkDialog();
+  }
+  await page.screenshot({ path: path.resolve('artifacts/retry-compact-landscape.png') });
   assert.deepEqual(errors, []);
   console.log('UI check passed: local fonts, Mana Soul states, 3/5 ammunition pips, spending/reset, isolated UI clicks, narrow/short HUD and dialogs.');
   await browser.close();

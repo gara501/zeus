@@ -43,7 +43,7 @@ Pause freezes clocks, lightning, phases, cycles and timed windows. Restart resto
 
 ## Music
 
-`src/music/1.mp3` loops during levels 1–16; `src/music/2.mp3` loops from level 17 onward. Maximum music volume is 4%, temporarily reduced to 0.8% during sound effects, with a gradual return. Music pauses in menus, story scenes, pause and hidden tabs.
+`src/music/1.mp3` loops during levels 1–16; `src/music/2.mp3` loops from level 17 onward. Maximum music volume is 6%, temporarily reduced to 0.8% during sound effects, with a gradual return. Music pauses in menus, story scenes, pause and hidden tabs.
 
 **Music: on/off** is independent of **Effects: on/off**. Both preferences are saved. Music can also be configured on the title screen before playing.
 

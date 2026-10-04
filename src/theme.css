@@ -164,9 +164,23 @@ kbd { font: 12px var(--pixel); color: #f8ebce; background: #0a19245e; border-col
 #pause { flex-shrink: 0; min-height: 44px; font: 16px var(--pixel); padding: 8px 16px; }
 #option-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 18px 0 8px; }
 #option-actions button { margin: 0; min-height: 44px; padding: 10px; font-size: 17px; }
-.dialog { max-height: calc(100dvh - 32px); overflow-y: auto; border-image: var(--frame-image) var(--frame-slice) / var(--frame-edge) / 0 stretch; }
+.dialog { overflow: visible; border-image: var(--frame-image) var(--frame-slice) / var(--frame-edge) / 0 stretch; }
 .dialog::before { display: none; }
+.actions-dialog { padding: 18px 22px; }
+.actions-dialog h2 { font-size: 24px; margin: 8px 0; }
+.actions-dialog #dialog-text { font-size: 14px; line-height: 1.4; margin: 8px 0; }
+.actions-dialog #option-actions { margin: 12px 0 0; gap: 8px; }
+.actions-dialog #dialog-button { margin-top: 12px; min-height: 44px; padding: 10px 24px; }
 .options-dialog #dialog-button { width: 100%; min-height: 44px; }
+@media (max-height: 600px) {
+  .dialog { padding: 10px 18px; border-width: 10px; --frame-edge: 10px; }
+  .dialog-portrait { display: none; }
+  .dialog h2 { font-size: 21px; margin: 6px 0; }
+  .dialog .eyebrow { margin-bottom: 4px; }
+  .actions-dialog #dialog-text { margin: 6px 0; }
+  .actions-dialog #option-actions { margin-top: 8px; gap: 6px; }
+  .actions-dialog #dialog-button { margin-top: 8px; }
+}
 @media (max-width: 700px) {
   #pause { font-size: 13px; padding: 8px 10px; }
   .topbar { gap: 6px; }

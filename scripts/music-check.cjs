@@ -40,7 +40,7 @@ let browser;
     await page.locator(`[data-level="${index}"]`).click();
     await page.waitForFunction(track => !document.querySelector(`#music-${track}`).paused && document.querySelector(`#music-${track}`).currentTime > .1, track);
     assert.equal(await page.locator(`#music-${3 - track}`).evaluate(audio => audio.paused), true);
-    assert.equal(await page.locator(`#music-${track}`).evaluate(audio => audio.loop && audio.volume <= .04), true);
+    assert.equal(await page.locator(`#music-${track}`).evaluate(audio => audio.loop && audio.volume <= .06), true);
     await optionAction(page, 'home');
     await page.waitForFunction(() => document.body.dataset.mode === 'title');
     assert.equal(await page.locator('audio').evaluateAll(players => players.every(audio => audio.paused)), true);

@@ -1,6 +1,6 @@
 import { BASIC_LEVEL_COUNT } from './cinematics.js';
 
-export const MUSIC_VOLUME = .04;
+export const MUSIC_VOLUME = .06;
 export const DUCK_VOLUME = .008;
 const tracks = [new URL('./music/1.mp3', import.meta.url).href, new URL('./music/2.mp3', import.meta.url).href];
 

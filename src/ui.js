@@ -112,6 +112,7 @@ export function createUI(actions, levels) {
       element('option-actions').hidden = !['paused', 'lost'].includes(mode);
       root.querySelector('.dialog-portrait').hidden = mode === 'paused';
       root.querySelector('.dialog').classList.toggle('options-dialog', mode === 'paused');
+      root.querySelector('.dialog').classList.toggle('actions-dialog', ['paused', 'lost'].includes(mode));
       for (const selector of ['.topbar', '.lesson-info', '.bottom-panel']) root.querySelector(selector).inert = Boolean(dialog);
       element('fade').style.opacity = fade;
       element('fade').style.pointerEvents = fade > 0 ? 'auto' : 'none';
