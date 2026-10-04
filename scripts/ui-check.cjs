@@ -104,7 +104,7 @@ let browser;
         noScroll: dialog.scrollHeight <= dialog.clientHeight && dialog.scrollWidth <= dialog.clientWidth,
         actionsVisible: buttons.every(button => { const b = button.getBoundingClientRect(); return b.top >= box.top && b.bottom <= box.bottom && b.left >= box.left && b.right <= box.right; }) };
     });
-    assert.deepEqual(layout, { fits: true, noScroll: true, actionsVisible: true }, 'The modal and every action must fit without scroll or clipping');
+    assert.deepEqual(layout, { fits: true, noScroll: true, actionsVisible: true }, `The modal and every action must fit without scroll or clipping: ${JSON.stringify(page.viewportSize())}`);
   };
   await page.locator('#pause').click();
   await page.waitForSelector('body[data-mode="paused"]');

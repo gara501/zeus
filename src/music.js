@@ -15,7 +15,7 @@ export function createMusic() {
     document.body.append(audio);
     return audio;
   });
-  let selected = -1, unlocked = false, pending = false, blocked = false, duckTime = 0;
+  let selected = -1, unlocked = false, pending = false, blocked = false, duckTime = 0, gain = 1;
   const unlock = () => { unlocked = true; blocked = false; };
   document.addEventListener('pointerdown', unlock);
   document.addEventListener('keydown', unlock);
@@ -26,10 +26,11 @@ export function createMusic() {
     duck(events, effectsMuted) {
       if (!effectsMuted && events.length) {
         duckTime = Math.max(duckTime, .7);
-        if (selected >= 0) players[selected].volume = Math.min(players[selected].volume, DUCK_VOLUME);
+        if (selected >= 0) players[selected].volume = Math.min(players[selected].volume, DUCK_VOLUME * gain);
       }
     },
-    update(index, mode, screen, muted, dt) {
+    update(index, mode, screen, muted, dt, volume = .5) {
+      gain = Math.max(0, Math.min(1, volume)) * 2;
       const next = index < BASIC_LEVEL_COUNT ? 0 : 1;
       if (selected !== next) {
         players.forEach(audio => { audio.pause(); audio.volume = 0; });
@@ -38,7 +39,7 @@ export function createMusic() {
       }
       const audio = players[selected];
       duckTime = Math.max(0, duckTime - dt);
-      const active = unlocked && !muted && !document.hidden && screen === null
+      const active = unlocked && !muted && gain > 0 && !document.hidden && screen === null
         && ['playing', 'victory', 'lost', 'fadeIn', 'fadeOut'].includes(mode);
       if (!active) { audio.pause(); audio.volume = 0; return; }
       if (audio.paused && !pending && !blocked) {
@@ -47,7 +48,7 @@ export function createMusic() {
           if (error.name !== 'AbortError') blocked = true;
         }).finally(() => { pending = false; });
       }
-      const target = duckTime > 0 ? DUCK_VOLUME : MUSIC_VOLUME;
+      const target = (duckTime > 0 ? DUCK_VOLUME : MUSIC_VOLUME) * gain;
       // Fast attenuation leaves impacts clear; a slower return avoids abrupt jumps.
       const duration = target < audio.volume ? .04 : .6;
       audio.volume += (target - audio.volume) * (1 - Math.exp(-dt / duration));

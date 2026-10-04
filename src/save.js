@@ -12,8 +12,9 @@ export function readSave() {
   try {
     const value = JSON.parse(localStorage.getItem(KEY));
     return { stars: value?.stars && typeof value.stars === 'object' ? value.stars : {}, muted: value?.muted === true, musicMuted: value?.musicMuted === true,
-      boardZoom: Number.isFinite(value?.boardZoom) ? Math.max(1, Math.min(1.8, value.boardZoom)) : 1 };
-  } catch { return { stars: {}, muted: false, musicMuted: false, boardZoom: 1 }; }
+      boardZoom: Number.isFinite(value?.boardZoom) ? Math.max(1, Math.min(1.8, value.boardZoom)) : 1,
+      musicVolume: Number.isFinite(value?.musicVolume) ? Math.max(0, Math.min(1, value.musicVolume)) : .5 };
+  } catch { return { stars: {}, muted: false, musicMuted: false, boardZoom: 1, musicVolume: .5 }; }
 }
 export function writeSave(save) {
   try { localStorage.setItem(KEY, JSON.stringify(save)); } catch { /* Playing still works without storage. */ }

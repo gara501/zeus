@@ -232,6 +232,20 @@ kbd { font: 12px var(--pixel); color: #f8ebce; background: #0a19245e; border-col
 #board-zoom-control { display: grid; grid-template-columns: 1fr auto; gap: 7px; margin: 12px 0 0; font: 15px var(--pixel); text-align: left; color: #29353a; }
 #board-zoom { grid-column: 1 / -1; width: 100%; accent-color: var(--gold); min-height: 26px; pointer-events: auto; }
 #board-zoom-control small { grid-column: 1 / -1; font-size: 12px; color: #4b493e; }
+.option-slider { display: grid; grid-template-columns: 1fr auto; gap: 5px; margin-top: 12px; font: 15px var(--pixel); text-align: left; color: #29353a; }
+.option-slider input { grid-column: 1 / -1; width: 100%; min-height: 26px; accent-color: #77551d; pointer-events: auto; }
+@media (max-height: 600px) {
+  .option-slider { margin-top: 6px; gap: 2px; }
+  .option-slider input { min-height: 20px; }
+  .options-dialog #dialog-text { display: none; }
+}
+@media (max-height: 400px) {
+  .options-dialog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; }
+  .options-dialog > :not(label) { grid-column: 1 / -1; }
+  .options-dialog #dialog-label { display: none; }
+  .options-dialog h2, .options-dialog #option-actions, .options-dialog #dialog-button { margin: 0; }
+  .options-dialog #board-zoom-control, .options-dialog .option-slider { margin-top: 0; }
+}
 @media (max-width: 700px) and (min-height: 551px) {
   #story-scene { grid-template-columns: 62px minmax(0, 1fr); }
   #story-scene .narrator { width: 62px; }

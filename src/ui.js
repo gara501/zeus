@@ -23,6 +23,7 @@ export function createUI(actions, levels) {
       <h2 id="dialog-title"></h2><div id="stars" class="stars" hidden></div><p id="dialog-text"></p>
       <div id="option-actions" hidden><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button><button id="restart">Restart <kbd>R</kbd></button><button id="home">Home</button></div>
       <label id="board-zoom-control" hidden>Board zoom <output id="board-zoom-value">100%</output><input id="board-zoom" type="range" min="100" max="180" step="10" /><small>Drag the zoomed board to explore. Tap to fire.</small></label>
+      <label id="music-volume-control" class="option-slider" hidden>Music volume <output id="music-volume-value" for="music-volume">50%</output><input id="music-volume" type="range" min="0" max="100" step="1" /></label>
       <button id="dialog-button"></button>
     </section></div>
     <div id="fade" aria-hidden="true"></div>`;
@@ -33,6 +34,7 @@ export function createUI(actions, levels) {
   element('pause').addEventListener('click', actions.pause);
   element('sound').addEventListener('click', actions.sound);
   element('music').addEventListener('click', actions.music);
+  element('music-volume').addEventListener('input', event => actions.volume(Number(event.target.value) / 100));
   element('board-zoom').addEventListener('input', event => actions.zoom(Number(event.target.value) / 100));
   element('dialog-button').addEventListener('click', actions.dialog);
   element('mirror-controls').addEventListener('input', event => {
@@ -89,6 +91,9 @@ export function createUI(actions, levels) {
       if (touchLayout.matches && level.id === 'turn') element('hint').textContent = 'Use M1 to angle the blue mirror toward the totem, then tap its center to fire.';
       element('mentor').textContent = level.mentor;
       const busy = hasActiveShot(state);
+      element('music-volume-control').hidden = mode !== 'paused';
+      element('music-volume').value = Math.round(save.musicVolume * 100);
+      element('music-volume-value').textContent = `${Math.round(save.musicVolume * 100)}%`;
       element('board-zoom-control').hidden = mode !== 'paused' || !touchLayout.matches;
       element('board-zoom').value = boardView.zoom * 100;
       element('board-zoom-value').textContent = `${Math.round(boardView.zoom * 100)}%`;

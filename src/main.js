@@ -152,6 +152,7 @@ const cinematics = createCinematics({
   retry: () => boot(),
 }, levels);
 const ui = createUI({
+  volume: value => { if (mode === 'paused' && Number.isFinite(value)) { save.musicVolume = Math.max(0, Math.min(1, value)); writeSave(save); } },
   zoom: value => { if (mode === 'paused') { setBoardZoom(value); save.boardZoom = boardView.zoom; writeSave(save); } },
   rotate: (id, degrees) => {
     if (mode === 'playing' && Number.isFinite(degrees) && state.mirrors.some(mirror => mirror.id === id && mirror.rotatable)) {
@@ -256,7 +257,7 @@ function gameUpdate() {
   ui.update({ level: levels[index], index, state, mode, stars, save, fade, dragging });
   document.querySelector('#interface').hidden = screen !== null;
   cinematics.update(mode, screen, fade, dt, save);
-  music.update(index, mode, screen, save.musicMuted, dt);
+  music.update(index, mode, screen, save.musicMuted, dt, save.musicVolume);
 }
 
 // Losing window focus cannot silently consume the player's time or rays.

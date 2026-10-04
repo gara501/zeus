@@ -30,6 +30,8 @@ The header shows only the current level. After the first victory, **Levels** app
 
 The title buttons share the same dimensions, font and font size.
 
+On portrait mobile screens, the title uses `intro-mobile.png`; desktop and wider screens retain `title.png`. Options includes a saved **Music volume** slider from 0% to 100%. The default 50% preserves the previous music level; the maximum is capped at 12% audio gain, with proportional attenuation during sound effects. The Music toggle remains independent of volume.
+
 **Options** in the top bar opens a modal and pauses the game. Home, Restart, Effects and Music are grouped there to keep the footer clear for guidance and mobile mirror sliders. Continue or Esc closes the modal and resumes play. Keyboard focus stays inside the modal while it is open.
 
 ## Mechanics
@@ -84,6 +86,7 @@ Browser checks require an external Playwright installation and Chrome/Edge:
 
 ```sh
 node scripts/responsive-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
+node scripts/volume-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/browser-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/cinematics-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/ui-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/

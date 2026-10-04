@@ -2,6 +2,7 @@ import { isLevelUnlocked, nextLevelIndex } from './save.js';
 import { UNLOCK_ALL_LEVELS } from './config.js';
 import { dialoguePage } from './dialogue.js';
 export const titleImage = new URL('./sprites/transitions/title.png', import.meta.url).href;
+export const mobileTitleImage = new URL('./sprites/transitions/intro-mobile.png', import.meta.url).href;
 const goatImage = new URL('./sprites/amaltea.png', import.meta.url).href;
 export const intro = {
   image: new URL('./sprites/transitions/intro.png', import.meta.url).href,
@@ -37,7 +38,7 @@ export function chapterAfter(completed, total) {
   if (completed === 30) return finalTrial;
   return completed % 5 === 0 && completed <= 15 ? chapters[completed / 5 - 1] ?? null : null;
 }
-export const cinematicAssets = [titleImage, goatImage, intro.image, training.image, spiritTraining.image, finalTrial.image, ...chapters.map(chapter => chapter.image)];
+export const cinematicAssets = [titleImage, mobileTitleImage, goatImage, intro.image, training.image, spiritTraining.image, finalTrial.image, ...chapters.map(chapter => chapter.image)];
 
 export function createCinematics(actions, levels) {
   const root = document.createElement('section');
@@ -50,6 +51,7 @@ export function createCinematics(actions, levels) {
     <div id="cinematic-fade" aria-hidden="true"></div>`;
   document.body.append(root);
   const el = id => root.querySelector(`#${id}`);
+  const mobileTitle = matchMedia('(max-width: 700px)');
   let chapter = null, elapsed = 0, shown = -1, fullyRevealed = false, lastMode = '';
   let words = [], start = 0, page = { text: '', end: 0 }, pageWidth = -1, readingTime = 0, gap = 0;
   const measureContext = document.createElement('canvas').getContext('2d');
@@ -120,7 +122,8 @@ export function createCinematics(actions, levels) {
         if (root.style.getPropertyValue('--story-panel-height') !== height) root.style.setProperty('--story-panel-height', height);
       }
       el('scene-background').hidden = mode === 'loading';
-      if (['title', 'levels'].includes(screen) && el('scene-background').getAttribute('src') !== titleImage) el('scene-background').src = titleImage;
+      const homeImage = mobileTitle.matches ? mobileTitleImage : titleImage;
+      if (['title', 'levels'].includes(screen) && el('scene-background').getAttribute('src') !== homeImage) el('scene-background').src = homeImage;
       const completed = levels.filter(level => save.stars[level.id]).length;
       el('levels-button').hidden = !UNLOCK_ALL_LEVELS && completed === 0;
       el('levels-button').disabled = mode !== 'title';
