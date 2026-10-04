@@ -3,6 +3,7 @@ import { MIRROR_HIT_SCALE } from './config.js';
 import { levels } from './levels.js';
 import { createState, stepSimulation } from './simulation.js';
 import { earnedStars } from './scoring.js';
+import { boardView, setBoardZoom, panBoard, resetBoardPan } from './board-view.js';
 import { normalize, add, scale } from './ray.js';
 import { drawGame, fitCamera } from './render.js';
 import { playEvents } from './audio.js';
@@ -32,11 +33,42 @@ let hovered = null;
 let particles = [];
 let visual = { time: 0, shotAt: -Infinity, victoryAt: 0, lostAt: 0 };
 const save = readSave();
+setBoardZoom(save.boardZoom);
 const music = createMusic();
 const touchMirrorControls = matchMedia('(max-width: 700px), (pointer: coarse)');
 function toggleMusic() { save.musicMuted = !save.musicMuted; writeSave(save); }
 let pointerOnCanvas = false;
 let pointerScreen = { x: 0, y: 0 };
+let boardGesture = null, touchAim = null;
+for (const type of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
+  document.addEventListener(type, event => {
+    if (!boardGesture && !(mode === 'playing' && touchMirrorControls.matches && boardView.zoom > 1 && event.target instanceof HTMLCanvasElement)) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (event.touches.length > 1) { if (boardGesture) boardGesture.moved = true; return; }
+    if (type === 'touchstart') {
+      const finger = event.touches[0];
+      boardGesture = { x: finger.clientX, y: finger.clientY, startX: finger.clientX, startY: finger.clientY, moved: false };
+    } else if (type === 'touchmove' && boardGesture) {
+      const finger = event.touches[0];
+      if (!finger) return;
+      const moved = Math.hypot(finger.clientX - boardGesture.startX, finger.clientY - boardGesture.startY) > 8;
+      if (boardGesture.moved || moved) {
+        const dx = finger.clientX - (boardGesture.moved ? boardGesture.x : boardGesture.startX);
+        const dy = finger.clientY - (boardGesture.moved ? boardGesture.y : boardGesture.startY);
+        if (mode === 'playing') panBoard(dx, dy);
+        boardGesture.moved = true;
+      }
+      boardGesture.x = finger.clientX; boardGesture.y = finger.clientY;
+    } else if (type === 'touchend' || type === 'touchcancel') {
+      if (event.touches.length) { if (boardGesture) boardGesture.moved = true; return; }
+      if (type === 'touchend' && boardGesture && !boardGesture.moved && mode === 'playing') {
+        const finger = event.changedTouches[0];
+        touchAim = L.screenToWorld(L.vec2(finger.clientX, finger.clientY));
+      }
+      boardGesture = null;
+    }
+  }, { capture: true, passive: false });
+}
 document.addEventListener('mousemove', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 document.addEventListener('mousedown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
 document.addEventListener('pointerdown', event => { pointerScreen = { x: event.clientX, y: event.clientY }; });
@@ -48,6 +80,7 @@ document.addEventListener('pointermove', event => {
 
 function load(indexToLoad) {
   mirrorCommands.clear();
+  resetBoardPan(); boardGesture = touchAim = null;
   screen = null;
   index = indexToLoad;
   state = createState(levels[index]);
@@ -64,7 +97,7 @@ function restart() {
   load(index);
 }
 function togglePause() {
-  if (mode === 'playing') { mode = 'paused'; dragging = null; mirrorCommands.clear(); }
+  if (mode === 'playing') { mode = 'paused'; dragging = null; boardGesture = touchAim = null; mirrorCommands.clear(); }
   else if (mode === 'paused') mode = 'playing';
 }
 function finishFade() {
@@ -119,6 +152,7 @@ const cinematics = createCinematics({
   retry: () => boot(),
 }, levels);
 const ui = createUI({
+  zoom: value => { if (mode === 'paused') { setBoardZoom(value); save.boardZoom = boardView.zoom; writeSave(save); } },
   rotate: (id, degrees) => {
     if (mode === 'playing' && Number.isFinite(degrees) && state.mirrors.some(mirror => mirror.id === id && mirror.rotatable)) {
       mirrorCommands.set(id, degrees * Math.PI / 180);
@@ -174,7 +208,11 @@ function gameUpdate() {
         commands.push({ type: 'rotate', id: mirror.id, angle: Math.atan2(mouse.y - mirror.y, mouse.x - mirror.x) });
       }
     } else {
-      if (pointerOnCanvas && Math.hypot(mouse.x - state.zeus.x, mouse.y - state.zeus.y) > .1) {
+      if (touchAim) {
+        aim = normalize({ x: touchAim.x - state.zeus.x, y: touchAim.y - state.zeus.y });
+        commands.push({ type: 'fire', direction: aim });
+        touchAim = null;
+      } else if (pointerOnCanvas && Math.hypot(mouse.x - state.zeus.x, mouse.y - state.zeus.y) > .1) {
         aim = normalize({ x: mouse.x - state.zeus.x, y: mouse.y - state.zeus.y });
       }
       if ((mousePressed && (!hovered || touchMirrorControls.matches)) || L.keyWasPressed('Space')) commands.push({ type: 'fire', direction: aim });

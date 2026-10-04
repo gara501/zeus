@@ -1,4 +1,5 @@
 import { hasActiveShot } from './simulation.js';
+import { boardView } from './board-view.js';
 const zeusImage = new URL('./sprites/zeus.png', import.meta.url).href;
 
 export function createUI(actions, levels) {
@@ -21,6 +22,7 @@ export function createUI(actions, levels) {
       <div class="dialog-portrait" role="img" aria-label="Zeus"><div class="zeus-crop"><img src="${zeusImage}" alt="" /></div><span class="portrait-cap" aria-hidden="true"></span></div>
       <h2 id="dialog-title"></h2><div id="stars" class="stars" hidden></div><p id="dialog-text"></p>
       <div id="option-actions" hidden><button id="sound" aria-label="Mute effects">Effects: on</button><button id="music">Music: on</button><button id="restart">Restart <kbd>R</kbd></button><button id="home">Home</button></div>
+      <label id="board-zoom-control" hidden>Board zoom <output id="board-zoom-value">100%</output><input id="board-zoom" type="range" min="100" max="180" step="10" /><small>Drag the zoomed board to explore. Tap to fire.</small></label>
       <button id="dialog-button"></button>
     </section></div>
     <div id="fade" aria-hidden="true"></div>`;
@@ -31,6 +33,7 @@ export function createUI(actions, levels) {
   element('pause').addEventListener('click', actions.pause);
   element('sound').addEventListener('click', actions.sound);
   element('music').addEventListener('click', actions.music);
+  element('board-zoom').addEventListener('input', event => actions.zoom(Number(event.target.value) / 100));
   element('dialog-button').addEventListener('click', actions.dialog);
   element('mirror-controls').addEventListener('input', event => {
     if (event.target.matches('input[data-mirror]')) actions.rotate(event.target.dataset.mirror, Number(event.target.value));
@@ -86,6 +89,9 @@ export function createUI(actions, levels) {
       if (touchLayout.matches && level.id === 'turn') element('hint').textContent = 'Use M1 to angle the blue mirror toward the totem, then tap its center to fire.';
       element('mentor').textContent = level.mentor;
       const busy = hasActiveShot(state);
+      element('board-zoom-control').hidden = mode !== 'paused' || !touchLayout.matches;
+      element('board-zoom').value = boardView.zoom * 100;
+      element('board-zoom-value').textContent = `${Math.round(boardView.zoom * 100)}%`;
       element('ammo-pips').classList.toggle('busy', busy && mode === 'playing');
       element('shot-state').textContent = busy ? 'Bolt in flight · wait until it finishes' : 'Ready to fire';
       element('shot-state').classList.toggle('busy', busy);

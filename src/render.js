@@ -3,6 +3,7 @@ import { PALETTE, MIRROR_SCALE } from './config.js';
 import { add, scale, mirrorEnds, nearestHit, normalize, reflect } from './ray.js';
 import { crystalAngle, cloudReleaseTime } from './elements.js';
 import { monsterPose } from './monsters.js';
+import { boardView } from './board-view.js';
 import { drawFloorSprite, drawWallSprite, drawDoorSprite, drawZeusSprite,
   drawTotemSprite, drawWoodSprite, drawMetalSprite, drawCloudSprite,
   drawBlockSprite, drawWaterSprite, drawMirrorSprite, drawCrystalSprite, drawMonsterSprite, drawRodSprite } from './sprites.js';
@@ -17,18 +18,35 @@ const rect = (point, x, y, tint) => L.drawRect(vec(point), L.vec2(x, y), tint);
 const offset = (point, x, y) => add(point, { x, y });
 
 export function fitCamera() {
-  if (document.querySelector('#interface.touch-mirrors:not([hidden])')) {
+  const mobile = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
+  if (mobile) {
     const top = document.querySelector('.lesson-info').getBoundingClientRect().bottom + 12;
     const bottom = document.querySelector('.bottom-panel').getBoundingClientRect().top - 12;
-    const scale = Math.max(8, Math.min((L.mainCanvasSize.x - 44) / 16.5, (bottom - top) / 8.5));
+    const width = L.mainCanvasSize.x - 12, height = Math.max(60, bottom - top);
+    const scale = Math.max(8, Math.min(width / 15.6, height / 8.65)) * boardView.zoom;
+    const maxX = Math.max(0, (15.5 - width / scale) / 2);
+    const maxY = Math.max(0, (8.55 - height / scale) / 2);
+    boardView.x = Math.max(-maxX, Math.min(maxX, boardView.x));
+    boardView.y = Math.max(-maxY, Math.min(maxY, boardView.y));
+    boardView.scale = scale;
     L.setCameraScale(scale);
-    L.setCameraPos(L.vec2(0, ((top + bottom) / 2 - L.mainCanvasSize.y / 2) / scale));
-    return;
+    L.setCameraPos(L.vec2(boardView.x, ((top + bottom) / 2 - L.mainCanvasSize.y / 2) / scale + boardView.y));
+  } else {
+    const short = L.mainCanvasSize.y < 550;
+    const padding = short ? 285 : 310;
+    L.setCameraScale(Math.max(8, Math.min((L.mainCanvasSize.x - 44) / 16.5, (L.mainCanvasSize.y - padding) / 8.5)));
+    L.setCameraPos(L.vec2(0, short ? .6 : .1));
   }
-  const short = L.mainCanvasSize.y < 550;
-  const padding = short ? 285 : 310;
-  L.setCameraScale(Math.max(8, Math.min((L.mainCanvasSize.x - 44) / 16.5, (L.mainCanvasSize.y - padding) / 8.5)));
-  L.setCameraPos(L.vec2(0, short ? .6 : .1));
+  publishCamera();
+}
+
+function publishCamera() {
+  // Shared coordinates keep UI/input checks independent of camera layout.
+  for (const canvas of document.querySelectorAll('#game canvas')) {
+    for (const [key, value] of Object.entries({ scale: L.cameraScale, centerX: L.cameraPos.x, centerY: L.cameraPos.y })) {
+      if (canvas.dataset[key] !== String(value)) canvas.dataset[key] = value;
+    }
+  }
 }
 
 function drawZeus(position, aim, time, visual, status) {

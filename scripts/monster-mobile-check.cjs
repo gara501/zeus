@@ -25,12 +25,7 @@ let browser;
   }
   await page.waitForFunction(() => document.querySelector('#mirror-0').value === '135' && document.querySelector('#mirror-1').value === '45');
   const fire = async () => {
-    const point = await page.evaluate(() => {
-      const top = document.querySelector('.lesson-info').getBoundingClientRect().bottom + 12;
-      const bottom = document.querySelector('.bottom-panel').getBoundingClientRect().top - 12;
-      const scale = Math.max(8, Math.min((innerWidth - 44) / 16.5, (bottom - top) / 8.5));
-      return { x: innerWidth / 2 - 2 * scale, y: (top + bottom) / 2 + 1.5 * scale };
-    });
+    const point = await require('./board-helpers.cjs').boardPoint(page, -2, -1.5);
     await page.touchscreen.tap(point.x, point.y);
   };
   await fire();

@@ -219,3 +219,27 @@ kbd { font: 12px var(--pixel); color: #f8ebce; background: #0a19245e; border-col
   #story-scene .narrator { width: 55px; }
   #story-text { font-size: 14px; }
 }
+
+/* The illustration owns the space above the compact subtitle panel. */
+#cinematics[data-screen="story"] #scene-background {
+  top: 0; height: calc(100% - var(--story-panel-height, 160px) + 18px);
+  object-fit: cover; object-position: 50% 0%;
+}
+@media (max-width: 700px), (pointer: coarse) {
+  #cinematics[data-screen="story"] #scene-background { object-position: var(--story-focus, 50% 40%); }
+}
+#cinematics[data-screen="story"] #story-scene { background: linear-gradient(transparent, #10191f 24px); }
+#board-zoom-control { display: grid; grid-template-columns: 1fr auto; gap: 7px; margin: 12px 0 0; font: 15px var(--pixel); text-align: left; color: #29353a; }
+#board-zoom { grid-column: 1 / -1; width: 100%; accent-color: var(--gold); min-height: 26px; pointer-events: auto; }
+#board-zoom-control small { grid-column: 1 / -1; font-size: 12px; color: #4b493e; }
+@media (max-width: 700px) and (min-height: 551px) {
+  #story-scene { grid-template-columns: 62px minmax(0, 1fr); }
+  #story-scene .narrator { width: 62px; }
+  .guidance p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  .guidance span { display: none; }
+}
+@media (max-height: 600px) {
+  #board-zoom-control { margin-top: 7px; gap: 2px; }
+  #board-zoom { min-height: 20px; }
+  #board-zoom-control small { display: none; }
+}

@@ -14,11 +14,7 @@ let browser;
     await page.locator('[data-level="0"]').click();
     await page.waitForSelector('body[data-mode="playing"]');
     const shoot = async (x, y) => {
-      const point = await page.evaluate(({ x, y }) => {
-        const canvas = document.querySelector('#game canvas').getBoundingClientRect();
-        const scale = Math.min((canvas.width - 44) / 16.5, (canvas.height - 310) / 8.5);
-        return { x: canvas.x + canvas.width / 2 + x * scale, y: canvas.y + canvas.height / 2 - (y - .1) * scale };
-      }, { x, y });
+      const point = await require('./board-helpers.cjs').boardPoint(page, x, y);
       if (viewport.width < 700) await page.touchscreen.tap(point.x, point.y);
       else await page.mouse.click(point.x, point.y);
     };

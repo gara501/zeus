@@ -11,8 +11,9 @@ export function nextLevelIndex(levels, save) {
 export function readSave() {
   try {
     const value = JSON.parse(localStorage.getItem(KEY));
-    return { stars: value?.stars && typeof value.stars === 'object' ? value.stars : {}, muted: value?.muted === true, musicMuted: value?.musicMuted === true };
-  } catch { return { stars: {}, muted: false, musicMuted: false }; }
+    return { stars: value?.stars && typeof value.stars === 'object' ? value.stars : {}, muted: value?.muted === true, musicMuted: value?.musicMuted === true,
+      boardZoom: Number.isFinite(value?.boardZoom) ? Math.max(1, Math.min(1.8, value.boardZoom)) : 1 };
+  } catch { return { stars: {}, muted: false, musicMuted: false, boardZoom: 1 }; }
 }
 export function writeSave(save) {
   try { localStorage.setItem(KEY, JSON.stringify(save)); } catch { /* Playing still works without storage. */ }

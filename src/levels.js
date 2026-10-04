@@ -147,7 +147,7 @@ export const levels = [
     mentor: '“The bolt ends. Its echo can still wait for the next.”',
     idealShots: 2, threeStarTime: 45,
     map: board([['Z', -5, -.5], ['T', 1, 1.5], ['T', 1, -2.5], ['D', 6, 2.5]]),
-    totems: [{ x: 1, y: 1.5, group: 'window' }, { x: 1, y: -2.5, group: 'window' }],
+    totems: [{ x: 1, y: 1.5, group: 'window' }, { x: 1, y: -2.5, offsetY: .25, size: 1.3, group: 'window' }],
     groups: [{ id: 'window', type: 'timed', window: 3 }], mirrors: [],
   },
   {

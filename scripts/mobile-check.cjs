@@ -65,13 +65,7 @@ let browser;
   await slider.evaluate(input => { input.value = '45'; input.dispatchEvent(new Event('input', { bubbles: true })); });
   await page.waitForFunction(() => document.querySelector('.mirror-lever output').textContent === '45.0°');
   await page.screenshot({ path: 'artifacts/mobile-mirror-controls.png' });
-  const mirrorPoint = await page.evaluate(() => {
-    const canvas = document.querySelector('#game canvas').getBoundingClientRect();
-    const top = document.querySelector('.lesson-info').getBoundingClientRect().bottom + 12;
-    const bottom = document.querySelector('.bottom-panel').getBoundingClientRect().top - 12;
-    const scale = Math.max(8, Math.min((canvas.width - 44) / 16.5, (bottom - top) / 8.5));
-    return { x: canvas.width / 2 + scale, y: (top + bottom) / 2 + 1.5 * scale };
-  });
+  const mirrorPoint = await require('./board-helpers.cjs').boardPoint(page, 1, -1.5);
   await page.touchscreen.tap(mirrorPoint.x, mirrorPoint.y);
   await page.waitForSelector('body[data-mode="victory"]');
   assert.equal(await page.locator('#ammo').textContent(), '1', 'Tapping a mirror on mobile fires the bolt and solves the rotated route');

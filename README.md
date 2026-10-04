@@ -22,6 +22,8 @@ Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate i
 
 On mobile and narrow screens, use the bottom **M1, M2, …** sliders to rotate the matching blue mirrors. Each slider shows its angle and supports half-degree adjustments from 0° to 180°. Tap the board to aim and fire, including directly at a mirror. Sliders remain usable during a lightning shot or cloud charge, and restart restores their initial angles.
 
+The mobile board uses almost the full screen width. **Options → Board zoom** adjusts its size from 100% to 180% and saves the preference. With zoom enabled, drag the board to explore and tap to fire; dragging never fires. Loading a level recenters the view. Story artwork fills the area above the two-line dialogue, with mobile crops focused on Zeus or the eagle using the existing images.
+
 Every level provides unlimited bolts. The HUD shows bolts fired and ∞. Completion earns one star; using no more than the ideal number of shots earns two, and also finishing within the target time earns three. Only one shot may be active, including its branches, conduction and stored cloud charges. A blocked firing attempt does not increase the shot count and is never queued. Mirrors can be rotated while lightning travels or a cloud charges.
 
 The header shows only the current level. After the first victory, **Levels** appears on the title screen: a grid with earned stars, completed levels available to replay, the next unlocked level and locked future levels. **Continue** resumes the first unfinished lesson. **Home** returns to the title during play or pause. Progress and audio preferences are saved locally.
@@ -81,6 +83,7 @@ Original tileset, Zeus, totem, wood, metal, cloud, water and mirror sheets remai
 Browser checks require an external Playwright installation and Chrome/Edge:
 
 ```sh
+node scripts/responsive-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/browser-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/cinematics-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/
 node scripts/ui-check.cjs /path/to/playwright /path/to/browser http://127.0.0.1:5173/

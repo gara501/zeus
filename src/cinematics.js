@@ -91,6 +91,7 @@ export function createCinematics(actions, levels) {
       start = 0; pageWidth = -1; readingTime = gap = 0;
       root.dataset.storyComplete = 'false';
       el('scene-background').src = chapter.image;
+      root.style.setProperty('--story-focus', chapter.focus ?? (chapter.narrator === 'EAGLE' ? '65% 40%' : '34% 40%'));
       el('story-title').textContent = chapter.title;
       const eagle = chapter.narrator === 'EAGLE';
       el('narrator-name').textContent = eagle ? 'EAGLE' : 'AMALTHEA';
@@ -114,6 +115,10 @@ export function createCinematics(actions, levels) {
       el('title-screen').hidden = screen !== 'title';
       el('levels-screen').hidden = screen !== 'levels';
       el('story-scene').hidden = screen !== 'story';
+      if (screen === 'story') {
+        const height = `${Math.ceil(el('story-scene').getBoundingClientRect().height)}px`;
+        if (root.style.getPropertyValue('--story-panel-height') !== height) root.style.setProperty('--story-panel-height', height);
+      }
       el('scene-background').hidden = mode === 'loading';
       if (['title', 'levels'].includes(screen) && el('scene-background').getAttribute('src') !== titleImage) el('scene-background').src = titleImage;
       const completed = levels.filter(level => save.stars[level.id]).length;
