@@ -1,7 +1,8 @@
+import { UNLOCK_ALL_LEVELS } from './config.js';
 const KEY = 'zeus-progress-v1';
 export function isLevelUnlocked(levels, save, index) {
   return Number.isInteger(index) && index >= 0 && index < levels.length
-    && (index === 0 || Boolean(save.stars[levels[index].id]) || Boolean(save.stars[levels[index - 1].id]));
+    && (UNLOCK_ALL_LEVELS || index === 0 || Boolean(save.stars[levels[index].id]) || Boolean(save.stars[levels[index - 1].id]));
 }
 export function nextLevelIndex(levels, save) {
   const next = levels.findIndex(level => !save.stars[level.id]);

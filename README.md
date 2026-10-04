@@ -16,6 +16,8 @@ Level 24, **The Return of Thunder**, uses one continuous circuit: adjust two blu
 
 ## Controls and progression
 
+**Temporary playtesting mode:** all 35 levels are accessible from **Levels** on the title screen, including with a fresh save. Earned stars and completion remain unchanged. Set `UNLOCK_ALL_LEVELS` to `false` in `src/config.js` to restore the progression rules below before release.
+
 Aim with the mouse; click or press Space to fire. Drag a blue mirror to rotate it freely. R/Z restarts the level; Esc pauses. Fixed mirrors are bronze. Mirrors use a compact scale shared by rendering, collision geometry and rotation controls.
 
 On mobile and narrow screens, use the bottom **M1, M2, …** sliders to rotate the matching blue mirrors. Each slider shows its angle and supports half-degree adjustments from 0° to 180°. Tap the board to aim and fire, including directly at a mirror. Sliders remain usable during a lightning shot or cloud charge, and restart restores their initial angles.

@@ -1,4 +1,5 @@
 import { isLevelUnlocked, nextLevelIndex } from './save.js';
+import { UNLOCK_ALL_LEVELS } from './config.js';
 import { dialoguePage } from './dialogue.js';
 export const titleImage = new URL('./sprites/transitions/title.png', import.meta.url).href;
 const goatImage = new URL('./sprites/amaltea.png', import.meta.url).href;
@@ -116,11 +117,14 @@ export function createCinematics(actions, levels) {
       el('scene-background').hidden = mode === 'loading';
       if (['title', 'levels'].includes(screen) && el('scene-background').getAttribute('src') !== titleImage) el('scene-background').src = titleImage;
       const completed = levels.filter(level => save.stars[level.id]).length;
-      el('levels-button').hidden = completed === 0;
+      el('levels-button').hidden = !UNLOCK_ALL_LEVELS && completed === 0;
       el('levels-button').disabled = mode !== 'title';
       el('start-button').textContent = completed ? 'Continue' : 'Start';
       el('levels-back').disabled = mode !== 'levels';
       el('levels-progress').textContent = `${completed} of ${levels.length} lessons completed`;
+      root.querySelector('.levels-help').textContent = UNLOCK_ALL_LEVELS
+        ? 'All levels are temporarily unlocked for testing.'
+        : 'Complete a lesson to unlock the next.';
       if (screen === 'levels') root.querySelectorAll('[data-level]').forEach(button => {
         const number = Number(button.dataset.level), earned = save.stars[levels[number].id] || 0;
         const unlocked = isLevelUnlocked(levels, save, number);

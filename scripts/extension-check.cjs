@@ -8,6 +8,7 @@ let browser, page;
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   const { levels } = await import('../src/levels.js');
+  const { UNLOCK_ALL_LEVELS } = await import('../src/config.js');
   const { solutionPlans } = await import('./level-solutions.js');
   await page.goto(process.argv[4] || 'http://127.0.0.1:5173/');
   await page.evaluate(ids => localStorage.setItem('zeus-progress-v1', JSON.stringify({ stars: Object.fromEntries(ids.map(id => [id, 3])), muted: true, musicMuted: true })), levels.slice(0, 25).map(level => level.id));
@@ -17,7 +18,7 @@ let browser, page;
   await page.waitForSelector('body[data-mode="levels"]');
   assert.equal(await page.locator('.level-card').count(), 35);
   assert.equal(await page.locator('[data-level="25"]').isEnabled(), true);
-  assert.equal(await page.locator('[data-level="26"]').isEnabled(), false);
+  assert.equal(await page.locator('[data-level="26"]').isEnabled(), UNLOCK_ALL_LEVELS);
   await page.locator('#levels-back').click();
   await page.locator('#start-button').click();
   const scene = async (file, phrase) => {
